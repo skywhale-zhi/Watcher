@@ -44,7 +44,7 @@
 
 你可以在watcher/logs文件夹里看到玩家日常信息搜集，在watcher/cheatlogs文件夹里看到作弊信息搜集，在watcher/tshock_backups文件夹里看到备份的sqlite文件，在WatcherConfig.json里修改你需要的各种配置信息
 
-输入`/locknpc 41`那么所有的兔兔均不能被玩家杀死。输入`/locknpc kslzy`或`/locknpc 克苏鲁之眼`或`/locknpc 4`那么克苏鲁之眼和克苏鲁之仆均不能被玩家杀死（对于boss，一次添加会同时保护boss和大多数boss的仆从，肢体等，这里`/locknpc 4`同时保护了克眼和仆从，对于机械骷髅王还会同时保护四个钳子，不需要用户一个一个输入指令来保护）
+输入`/locknpc 41`那么所有的兔兔均不能被玩家杀死。输入`/locknpc kslzy`或`/locknpc 克苏鲁之眼`或`/locknpc 4`或`/locknpc ky`或`/locknpc 克眼`那么克苏鲁之眼和克苏鲁之仆均不能被玩家杀死（对于boss，一次添加会同时保护boss和大多数boss的仆从，肢体等，这里`/locknpc 4`同时保护了克眼和仆从，对于机械骷髅王还会同时保护四个钳子，不需要用户一个一个输入指令来保护）
 
 输入`/unlocknpc 41`将解除兔兔的保护，克眼也一样，同时解除boss的仆从，肢体保护
 
