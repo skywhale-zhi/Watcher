@@ -7,7 +7,7 @@
 
 2. 一定程度上检测作弊的插件，如多杆钓鱼检测，弹幕伤害过高检测（排除了冲击波和尖桩发射器），不符合游戏进度的物品检测。对作弊的玩家踢出，超过限定允许的次数时ban掉，可在WatcherConfig.json里改允许次数，再控制台里/reload即可生效（下面不在赘述，均简称为 可改）
 
-3. 允许封禁游戏进度，其实就是允许设置某些npc（boss）为不可伤害，强制玩家不能快速推进度，~~即使开了一击必杀作弊器也不行~~，
+3. 允许封禁游戏进度，其实就是允许设置某些npc（boss）为不可被玩家伤害，强制玩家不能快速推进度，~~即使开了一击必杀作弊器也不行~~，
 
 4. 自动备份tshock.sqlite文件（原版tshock只备份了地图，sqlite文件没有备份，而又有极低的概率损坏某些玩家的存档）可设置备份时常间隔。不用担心日志过多，会自动清理，可改 备份时常，间隔，日志要求大小
 
@@ -41,4 +41,60 @@
 
 ## 用法
 直接将插件放置于tshock插件文件夹里即可，默认修改控制台为中文，可改
+
 你可以在watcher/logs文件夹里看到玩家日常信息搜集，在watcher/cheatlogs文件夹里看到作弊信息搜集，在watcher/tshock_backups文件夹里看到备份的sqlite文件，在WatcherConfig.json里修改你需要的各种配置信息
+
+输入`/locknpc 41`那么所有的兔兔均不能被玩家杀死。输入`/locknpc kslzy`或`/locknpc 克苏鲁之眼`或`/locknpc 4`那么克苏鲁之眼和克苏鲁之仆均不能被玩家杀死（对于boss，一次添加会同时保护boss和大多数boss的仆从，肢体等，这里`/locknpc 4`同时保护了克眼和仆从，对于机械骷髅王还会同时保护四个钳子，不需要用户一个一个输入指令来保护）
+
+输入`/unlocknpc 41`将解除兔兔的保护，克眼也一样，同时解除boss的仆从，肢体保护
+
+输入`/listlocknpc`来查看哪些npc被保护
+
+输入`/adduci 2624`来将海啸设置为不被检查的物品，因为watcher有物品进度检测功能，在打败猪鲨之前获得海啸会被认定为作弊，使用此指令将该物品设置为豁免物
+
+输入`/deluci item.id`来移除某个物品的豁免
+
+输入`/listuci`来查看所有豁免物品
+
+## WatcherConfig.json
+
+一个可以详细修改功能的文件，修改后在控制台或游戏内使用`/reload`即可生效，下面对每个项进行了解释
+
+```
+{
+  "enableChinese_启用中文": true,                                                       //顾名思义
+  "whetherToWriteTheConversationContentInTheLog_是否把对话内容写入日志": true,          //就是把正常玩家对话和使用指令写到watcher/logs里（可能包含玩家注册密码）
+  "whetherToWriteTheDiscardsIntoTheLog_是否把丢弃物写入日志": true,                     //丢弃物包括正常丢弃和用户在世界进行操作时生成的物品，如砍树掉落的木头也算进去
+  "whetherToWriteTheHoldingObjectIntoTheLog_是否把手持物写入日志": true,                //顾名思义
+  "whetherToWriteTheProjectilesIntoTheLog_是否把生成射弹写入日志": true,                //顾名思义
+  "logAndCheatLogBackUpTime_日志和作弊记录日志的备份时常": 21600,                       //单位，分钟
+  "maxMBofLogAndCheatLog_日志和作弊日志文件的最大MB": 1,                                //每个日志最大1MB，单位MB
+  "ImmunityHoldItemID_拿持日志中的豁免物品ID": [                                        //当玩家手持这些物品时，不会写入日志，以防日志记录太多无效信息，这里2，3仅是例子，该插件会自动为你生成好常用的豁免ID，无需手动搜集
+    2,
+    3
+  ],
+  "ImmunityDropItemsID_丢弃日志中的豁免物品ID": [                                       //同上
+    0,
+    2
+  ],
+  "DangerousProjectileID_射弹日志中需要记录的危险的射弹物ID": [                         //这里是需要记录的射弹，与上面的反过来了，通常这里是炸弹，岩浆炸弹，各种火箭等危险毁图射弹，该插件也已经准备好常用的警告射弹物ID了，这里的17，28仅是例子，无需手动搜集
+    17,
+    28
+  ],
+  "backUpTshockSql_是否备份tshockSql": true,
+  "backupInterval_备份间隔": 20,                                                       //单位分钟，都是分钟
+  "backUpTime_备份时长": 2880,
+  "enableItemDetection_启用物品作弊检测": true,                                        //携带超进度物品会被踢
+  "enableProjDamage_启用射弹伤害检测": true,                                           //射弹伤害检测，排除了灰橙冲击枪，尖桩发射器，这个功能会在tshock自带的伤害检测后运行，注意使用顺序
+  "enableBobberNum_启用浮标数目检测": true,                                            //检测多竿钓鱼
+  "numberOfBan_允许的违规次数": 7,                                                     //当违规次数达到7次时，强制ban掉违规玩家
+  "needCheckedPlayerGroups_需要被检测的玩家组": [                                      //以下玩家组会被作弊系统检测，包括射弹，钓鱼，物品，伤害等检测
+    "default",
+    "vip"
+  ],
+  "ignoreCheckedItemsID_不需要被作弊检查的物品id": [],                                 //写入此处的物品id将不会被 物品进度检测功能 算进去
+  "BossAndMonsterProgress_Boss和怪物封禁": []                                          //写入此处的 npc id （注意是npc id 不是 item id）将不会被玩家杀死，可以用来保护boss，防止有人偷推进度
+}
+```
+
+## 代码很烂请大佬不要在意，欢迎大家使用
