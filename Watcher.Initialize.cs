@@ -15,6 +15,7 @@ using TShockAPI.DB;
 using System.Collections;
 using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
+using OTAPI;
 
 namespace Watcher
 {
@@ -387,22 +388,22 @@ namespace Watcher
         }
 
 
-        //击中该boss时触发，这里用来保护npc
-        private void OnNpcStrike(NpcStrikeEventArgs args)
+        //击中npc时触发，向攻击保护动物的玩家发送消息,对保护动物进行回血保护
+        private HookResult OnStrike(NPC npc, ref double cancelResult, ref int Damage, ref float knockBack, ref int hitDirection, ref bool crit, ref bool noEffect, ref bool fromNet, Entity entity)
         {
-            NPC npc = args.Npc;
-            if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(npc.netID))
-                return;
-
-            npc.life = npc.lifeMax;
-            npc.HealEffect(args.Damage);
-            args.Damage = 0;
-
-            if (Main.rand.Next(1, 6) == 3)
+            if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(npc.netID))
             {
-                TShock.Players[args.Player.whoAmI].SendInfoMessage($"{npc.FullName} 被系统保护，若有疑问请联系管理员");
+                npc.HealEffect(Damage);
+                Damage = 0;
+                knockBack = 0;
+                npc.life = npc.lifeMax;
+                if (Main.rand.Next(1, 8) == 4 && entity is Player)
+                {
+                    Player player = entity as Player;
+                    TShock.Players[player.whoAmI].SendInfoMessage($"{npc.FullName} 被系统保护，若有疑问请联系管理员");
+                }
             }
-            npc.netUpdate = true;
+            return HookResult.Continue;
         }
 
 

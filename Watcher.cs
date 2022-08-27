@@ -14,6 +14,7 @@ using System.Data;
 using TShockAPI.DB;
 using System.Collections;
 using Rests;
+using OTAPI;
 
 namespace Watcher
 {
@@ -117,8 +118,9 @@ namespace Watcher
             //检查登录的人是否是作弊人员
             ServerApi.Hooks.ServerJoin.Register(this, OnServerjoin);
             ServerApi.Hooks.ServerLeave.Register(this, OnServerLeave);
-            //击中boss时触发
-            ServerApi.Hooks.NpcStrike.Register(this, OnNpcStrike);
+            //击中npc时触发，向攻击保护动物的玩家发送消息,对保护动物进行回血保护
+            Hooks.Npc.Strike += OnStrike;
+            //这里当boss生成是发送警告此为保护动物的消息
             ServerApi.Hooks.NpcSpawn.Register(this, OnNpcSpawn);
 
 
@@ -180,7 +182,7 @@ namespace Watcher
                 ServerApi.Hooks.ServerJoin.Deregister(this, OnServerjoin);
                 ServerApi.Hooks.ServerLeave.Deregister(this, OnServerLeave);
                 //ServerApi.Hooks.NetGetData.Deregister(this, SummonBoss);
-                ServerApi.Hooks.NpcStrike.Deregister(this, OnNpcStrike);
+                Hooks.Npc.Strike -= OnStrike;
                 ServerApi.Hooks.NpcSpawn.Deregister(this, OnNpcSpawn);
 
 
