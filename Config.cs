@@ -62,7 +62,7 @@ namespace Watcher
             numberOfBan_允许的违规次数 = num8;
             needCheckedPlayerGroups_需要被检测的玩家组 = str1;
             ignoreCheckedItemsID_不需要被作弊检查的物品id = hs4;
-            BossAndMonsterProgress_Boss和怪物封禁 = l1;
+            ProtectedNPC_被保护的NPC = l1;
         }
 
         public bool enableChinese_启用中文;
@@ -87,6 +87,6 @@ namespace Watcher
         public int numberOfBan_允许的违规次数;
         public string[] needCheckedPlayerGroups_需要被检测的玩家组;
         public HashSet<int> ignoreCheckedItemsID_不需要被作弊检查的物品id;
-        public List<int> BossAndMonsterProgress_Boss和怪物封禁;
+        public List<int> ProtectedNPC_被保护的NPC;
     }
 }

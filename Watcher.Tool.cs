@@ -19,7 +19,7 @@ namespace Watcher
     public partial class Watcher : TerrariaPlugin
     {
         //备份tshock.sqlite文件
-        public void BackUpTshockSql()
+        private void BackUpTshockSql()
         {
             if ((int)(Main.timeForVisualEffects % (3600 * config.backupInterval_备份间隔)) != 0)
                 return;
@@ -39,7 +39,7 @@ namespace Watcher
 
 
         //物品作弊检测方法
-        public void ItemCheatingCheck(EventArgs args, object sender, GetDataHandlers.PlayerSlotEventArgs e, int Model = 0)
+        private void ItemCheatingCheck(EventArgs args, object sender, GetDataHandlers.PlayerSlotEventArgs e, int Model = 0)
         {
             //Model = 1, 15分钟全员检测一次
             if (Model == 1 && (int)Main.timeForVisualEffects % (60 * 60 * 5) == 0) //大致15分钟 = 54000
@@ -234,7 +234,7 @@ namespace Watcher
 
 
         //从dir文件夹里删除超过min时常的旧文件
-        public static void DeleteOldFiles(string dir, int min)
+        private static void DeleteOldFiles(string dir, int min)
         {
             try
             {
@@ -260,7 +260,7 @@ namespace Watcher
 
 
         //当日志过大时重新创建日志
-        public void AvoidLogSize(string dirPathName, string dirPath, string filePath)
+        private void AvoidLogSize(string dirPathName, string dirPath, string filePath)
         {
             if (File.Exists(filePath))
             {

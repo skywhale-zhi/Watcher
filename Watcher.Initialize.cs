@@ -391,9 +391,16 @@ namespace Watcher
         //击中npc时触发，向攻击保护动物的玩家发送消息,对保护动物进行回血保护
         private HookResult OnStrike(NPC npc, ref double cancelResult, ref int Damage, ref float knockBack, ref int hitDirection, ref bool crit, ref bool noEffect, ref bool fromNet, Entity entity)
         {
-            if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(npc.netID))
+            if (config.ProtectedNPC_被保护的NPC.Contains(npc.netID))
             {
-                npc.HealEffect(Damage);
+                if (Damage < 9090)
+                {
+                    npc.HealEffect(Damage);
+                }
+                else
+                {
+                    npc.HealEffect(114514);
+                }
                 Damage = 0;
                 knockBack = 0;
                 npc.life = npc.lifeMax;
@@ -411,7 +418,7 @@ namespace Watcher
         private void OnNpcSpawn(NpcSpawnEventArgs args)
         {
             NPC npc = Main.npc[args.NpcId];
-            if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(npc.netID))
+            if (!config.ProtectedNPC_被保护的NPC.Contains(npc.netID))
                 return;
             if (!npc.boss)
                 return;
@@ -438,377 +445,377 @@ namespace Watcher
             //常规boss
             if (text == "slmw" || text == "史莱姆王" || text == "sw" || text == "史王" || int.TryParse(text, out num) && num == NPCID.KingSlime)
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.KingSlime))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.KingSlime))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.KingSlime);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.KingSlime);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.SlimeSpiked))//尖刺史莱姆
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.SlimeSpiked))//尖刺史莱姆
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.SlimeSpiked);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.SlimeSpiked);
                 }
                 bossName = Lang.GetNPCNameValue(NPCID.KingSlime);
             }
             else if (text == "kslzy" || text == "克苏鲁之眼" || text == "ky" || text == "克眼" || int.TryParse(text, out num) && num == NPCID.EyeofCthulhu)
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.EyeofCthulhu))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.EyeofCthulhu))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.EyeofCthulhu);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.EyeofCthulhu);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.ServantofCthulhu))//克苏鲁之仆
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.ServantofCthulhu))//克苏鲁之仆
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.ServantofCthulhu);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.ServantofCthulhu);
                 }
                 bossName = Lang.GetNPCNameValue(NPCID.EyeofCthulhu);
             }
             else if (text == "sjtsz" || text == "世界吞噬者" || text == "rc" || text == "蠕虫" || int.TryParse(text, out num) && (num == NPCID.EaterofWorldsHead || num == NPCID.EaterofWorldsBody || num == NPCID.EaterofWorldsTail))
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.EaterofWorldsHead))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.EaterofWorldsHead))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.EaterofWorldsHead);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.EaterofWorldsHead);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.EaterofWorldsBody))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.EaterofWorldsBody))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.EaterofWorldsBody);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.EaterofWorldsBody);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.EaterofWorldsTail))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.EaterofWorldsTail))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.EaterofWorldsTail);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.EaterofWorldsTail);
                 }
                 bossName = "世界吞噬者";
             }
             else if (text == "kslzn" || text == "克苏鲁之脑" || text == "kn" || text == "克脑" || int.TryParse(text, out num) && (num == NPCID.BrainofCthulhu || num == NPCID.Creeper))
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.BrainofCthulhu))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.BrainofCthulhu))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.BrainofCthulhu);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.BrainofCthulhu);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.Creeper))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.Creeper))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.Creeper);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.Creeper);
                 }
                 bossName = Lang.GetNPCNameValue(NPCID.BrainofCthulhu);
             }
             else if (text == "fh" || text == "蜂后" || int.TryParse(text, out num) && num == NPCID.QueenBee)
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.QueenBee))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.QueenBee))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.QueenBee);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.QueenBee);
                 }
                 bossName = Lang.GetNPCNameValue(NPCID.QueenBee);
             }
             else if (text == "klw" || text == "骷髅王" || int.TryParse(text, out num) && num == NPCID.SkeletronHead)
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.SkeletronHead))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.SkeletronHead))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.SkeletronHead);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.SkeletronHead);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.SkeletronHand))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.SkeletronHand))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.SkeletronHand);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.SkeletronHand);
                 }
                 bossName = "骷髅王";
             }
             else if (text == "jl" || text == "巨鹿" || text == "ljg" || text == "鹿角怪" || int.TryParse(text, out num) && num == NPCID.Deerclops)
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.Deerclops))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.Deerclops))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.Deerclops);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.Deerclops);
                 }
                 bossName = Lang.GetNPCNameValue(NPCID.Deerclops);
             }
             else if (text == "xrq" || text == "血肉墙" || text == "rs" || text == "肉山" || int.TryParse(text, out num) && num == NPCID.WallofFlesh)
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.WallofFlesh))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.WallofFlesh))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.WallofFlesh);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.WallofFlesh);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.WallofFleshEye))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.WallofFleshEye))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.WallofFleshEye);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.WallofFleshEye);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.TheHungry))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.TheHungry))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.TheHungry);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.TheHungry);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.TheHungryII))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.TheHungryII))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.TheHungryII);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.TheHungryII);
                 }
                 bossName = Lang.GetNPCNameValue(NPCID.WallofFlesh);
             }
             else if (text == "slmhh" || text == "史莱姆皇后" || text == "sh" || text == "史后" || int.TryParse(text, out num) && num == NPCID.QueenSlimeBoss)
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.QueenSlimeBoss))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.QueenSlimeBoss))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.QueenSlimeBoss);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.QueenSlimeBoss);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.QueenSlimeMinionBlue))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.QueenSlimeMinionBlue))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.QueenSlimeMinionBlue);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.QueenSlimeMinionBlue);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.QueenSlimeMinionPink))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.QueenSlimeMinionPink))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.QueenSlimeMinionPink);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.QueenSlimeMinionPink);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.QueenSlimeMinionPurple))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.QueenSlimeMinionPurple))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.QueenSlimeMinionPurple);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.QueenSlimeMinionPurple);
                 }
                 bossName = Lang.GetNPCNameValue(NPCID.QueenSlimeBoss);
             }
             else if (text == "125" || text == "126" || text == "szmy" || text == "双子魔眼")
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(125))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(125))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(125);
+                    config.ProtectedNPC_被保护的NPC.Add(125);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(126))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(126))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(126);
+                    config.ProtectedNPC_被保护的NPC.Add(126);
                 }
                 bossName = "双子魔眼";
             }
             else if (text == "hmz" || text == "毁灭者" || text == "jxrc" || text == "机械蠕虫" || int.TryParse(text, out num) && (num == NPCID.TheDestroyer || num == NPCID.TheDestroyerBody || num == NPCID.TheDestroyerTail))
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.TheDestroyer))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.TheDestroyer))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.TheDestroyer);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.TheDestroyer);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.TheDestroyerBody))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.TheDestroyerBody))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.TheDestroyerBody);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.TheDestroyerBody);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.TheDestroyerTail))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.TheDestroyerTail))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.TheDestroyerTail);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.TheDestroyerTail);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.Probe))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.Probe))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.Probe);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.Probe);
                 }
                 bossName = "毁灭者";
             }
             else if (text == "jxklw" || text == "机械骷髅王" || int.TryParse(text, out num) && (num == NPCID.SkeletronPrime || num == NPCID.PrimeCannon || num == NPCID.PrimeSaw || num == NPCID.PrimeVice || num == NPCID.PrimeLaser))
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(127))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(127))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(127);
+                    config.ProtectedNPC_被保护的NPC.Add(127);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(128))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(128))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(128);
+                    config.ProtectedNPC_被保护的NPC.Add(128);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(129))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(129))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(129);
+                    config.ProtectedNPC_被保护的NPC.Add(129);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(130))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(130))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(130);
+                    config.ProtectedNPC_被保护的NPC.Add(130);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(131))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(131))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(131);
+                    config.ProtectedNPC_被保护的NPC.Add(131);
                 }
                 bossName = "机械骷髅王";
             }
             else if (text == "sjzh" || text == "世纪之花" || text == "世花" || int.TryParse(text, out num) && num == NPCID.Plantera)
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.Plantera))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.Plantera))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.Plantera);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.Plantera);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.PlanterasTentacle))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.PlanterasTentacle))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.PlanterasTentacle);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.PlanterasTentacle);
                 }
                 bossName = Lang.GetNPCNameValue(NPCID.Plantera);
             }
             else if (text == "sjr" || text == "石巨人" || int.TryParse(text, out num) && num == NPCID.Golem)
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.Golem))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.Golem))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.Golem);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.Golem);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.GolemFistLeft))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.GolemFistLeft))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.GolemFistLeft);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.GolemFistLeft);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.GolemFistRight))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.GolemFistRight))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.GolemFistRight);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.GolemFistRight);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.GolemHead))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.GolemHead))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.GolemHead);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.GolemHead);
                 }
                 bossName = "石巨人";
             }
             else if (text == "zlygj" || text == "猪龙鱼公爵" || text == "zs" || text == "猪鲨" || int.TryParse(text, out num) && num == NPCID.DukeFishron)
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.DukeFishron))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.DukeFishron))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.DukeFishron);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.DukeFishron);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.Sharkron))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.Sharkron))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.Sharkron);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.Sharkron);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.Sharkron2))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.Sharkron2))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.Sharkron2);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.Sharkron2);
                 }
                 bossName = Lang.GetNPCNameValue(NPCID.DukeFishron);
             }
             else if (text == "636" || text == "gznh" || text == "光之女皇" || text == "gn" || text == "光女")
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.HallowBoss))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.HallowBoss))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.HallowBoss);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.HallowBoss);
                 }
                 bossName = Lang.GetNPCNameValue(NPCID.HallowBoss);
             }
             else if (text == "xjt" || text == "邪教徒" || text == "byxjt" || text == "拜月邪教徒" || int.TryParse(text, out num) && num == NPCID.CultistBoss)
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.CultistBoss))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.CultistBoss))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.CultistBoss);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.CultistBoss);
                 }
                 bossName = Lang.GetNPCNameValue(NPCID.CultistBoss);
             }
             else if (text == "yqlz" || text == "月球领主" || text == "yllz" || text == "月亮领主" || text == "yz" || text == "月总" || int.TryParse(text, out num) && (num == NPCID.MoonLordHead || num == NPCID.MoonLordHand || num == NPCID.MoonLordCore || num == NPCID.MoonLordLeechBlob))
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.MoonLordHead))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.MoonLordHead))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.MoonLordHead);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.MoonLordHead);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.MoonLordHand))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.MoonLordHand))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.MoonLordHand);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.MoonLordHand);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.MoonLordCore))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.MoonLordCore))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.MoonLordCore);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.MoonLordCore);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.MoonLordLeechBlob))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.MoonLordLeechBlob))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.MoonLordLeechBlob);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.MoonLordLeechBlob);
                 }
                 bossName = "月球领主";
             }
             //四柱
             else if (text == "ryz" || text == "日耀柱" || int.TryParse(text, out num) && num == NPCID.LunarTowerSolar)
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.LunarTowerSolar))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.LunarTowerSolar))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.LunarTowerSolar);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.LunarTowerSolar);
                 }
                 bossName = Lang.GetNPCNameValue(NPCID.LunarTowerSolar);
             }
             else if (text == "xxz" || text == "星璇柱" || int.TryParse(text, out num) && num == NPCID.LunarTowerVortex)
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.LunarTowerVortex))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.LunarTowerVortex))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.LunarTowerVortex);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.LunarTowerVortex);
                 }
                 bossName = Lang.GetNPCNameValue(NPCID.LunarTowerVortex);
             }
             else if (text == "xcz" || text == "星尘柱" || int.TryParse(text, out num) && num == NPCID.LunarTowerStardust)
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.LunarTowerStardust))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.LunarTowerStardust))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.LunarTowerStardust);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.LunarTowerStardust);
                 }
                 bossName = Lang.GetNPCNameValue(NPCID.LunarTowerStardust);
             }
             else if (text == "xyz" || text == "星云柱" || int.TryParse(text, out num) && num == NPCID.LunarTowerNebula)
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.LunarTowerNebula))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.LunarTowerNebula))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.LunarTowerNebula);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.LunarTowerNebula);
                 }
                 bossName = Lang.GetNPCNameValue(NPCID.LunarTowerNebula);
             }
             //天国军团boss
             else if (text == "hafs" || text == "黑暗法师" || text == "hamfs" || text == "黑暗魔法师" || int.TryParse(text, out num) && (num == NPCID.DD2DarkMageT1 || num == NPCID.DD2DarkMageT3))
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.DD2DarkMageT1))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.DD2DarkMageT1))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.DD2DarkMageT1);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.DD2DarkMageT1);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.DD2DarkMageT3))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.DD2DarkMageT3))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.DD2DarkMageT3);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.DD2DarkMageT3);
                 }
                 bossName = Lang.GetNPCNameValue(NPCID.DD2DarkMageT1);
             }
             else if (text == "srm" || text == "食人魔" || int.TryParse(text, out num) && (num == NPCID.DD2OgreT2 || num == NPCID.DD2OgreT3))
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.DD2OgreT2))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.DD2OgreT2))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.DD2OgreT2);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.DD2OgreT2);
                 }
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.DD2OgreT3))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.DD2OgreT3))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.DD2OgreT3);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.DD2OgreT3);
                 }
                 bossName = Lang.GetNPCNameValue(NPCID.DD2OgreT2);
             }
             else if (text == "szyl" || text == "双足翼龙" || text == "betsy" || text == "贝西塔" || int.TryParse(text, out num) && num == NPCID.DD2Betsy)
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.DD2Betsy))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.DD2Betsy))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.DD2Betsy);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.DD2Betsy);
                 }
                 bossName = Lang.GetNPCNameValue(NPCID.DD2Betsy);
             }
             //南瓜月，霜月
             else if (text == "am" || text == "哀木" || int.TryParse(text, out num) && num == NPCID.MourningWood)
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.MourningWood))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.MourningWood))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.MourningWood);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.MourningWood);
                 }
                 bossName = Lang.GetNPCNameValue(NPCID.MourningWood);
             }
             else if (text == "ngw" || text == "南瓜王" || int.TryParse(text, out num) && num == NPCID.Pumpking)
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.Pumpking))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.Pumpking))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.Pumpking);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.Pumpking);
                 }
                 bossName = Lang.GetNPCNameValue(NPCID.Pumpking);
             }
             else if (text == "cljjg" || text == "常绿尖叫怪" || text == "sds" || text == "圣诞树" || int.TryParse(text, out num) && num == NPCID.Everscream)
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.Everscream))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.Everscream))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.Everscream);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.Everscream);
                 }
                 bossName = Lang.GetNPCNameValue(NPCID.Everscream);
             }
             else if (text == "sdtk" || text == "圣诞坦克" || text == "sdlr" || text == "圣诞老人" || int.TryParse(text, out num) && num == NPCID.SantaNK1)
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.SantaNK1))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.SantaNK1))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.SantaNK1);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.SantaNK1);
                 }
                 bossName = Lang.GetNPCNameValue(NPCID.SantaNK1);
             }
             else if (text == "bxnh" || text == "冰雪女皇" || text == "bxnw" || text == "冰雪女王" || int.TryParse(text, out num) && num == NPCID.IceQueen)
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.IceQueen))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(NPCID.IceQueen))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(NPCID.IceQueen);
+                    config.ProtectedNPC_被保护的NPC.Add(NPCID.IceQueen);
                 }
                 bossName = Lang.GetNPCNameValue(NPCID.IceQueen);
             }
             //非boss
             else if (int.TryParse(text, out num) && num >= NpcIDMin && num <= NpcIDMax)
             {
-                if (!config.BossAndMonsterProgress_Boss和怪物封禁.Contains(num))
+                if (!config.ProtectedNPC_被保护的NPC.Contains(num))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Add(num);
+                    config.ProtectedNPC_被保护的NPC.Add(num);
                 }
                 bossName = Lang.GetNPCNameValue(num);
             }
@@ -844,284 +851,284 @@ namespace Watcher
             //常规boss
             if (text == "slmw" || text == "史莱姆王" || text == "sw" || text == "史王" || int.TryParse(text, out num) && num == NPCID.KingSlime)
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.KingSlime) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.SlimeSpiked))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.KingSlime) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.SlimeSpiked))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.KingSlime);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.SlimeSpiked);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.KingSlime);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.SlimeSpiked);
                     bossName = Lang.GetNPCNameValue(NPCID.KingSlime);
                 }
             }
             else if (text == "kslzy" || text == "克苏鲁之眼" || text == "ky" || text == "克眼" || int.TryParse(text, out num) && num == NPCID.EyeofCthulhu)
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.EyeofCthulhu) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.ServantofCthulhu))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.EyeofCthulhu) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.ServantofCthulhu))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.EyeofCthulhu);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.ServantofCthulhu);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.EyeofCthulhu);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.ServantofCthulhu);
                     bossName = Lang.GetNPCNameValue(NPCID.EyeofCthulhu);
                 }
             }
             else if (text == "sjtsz" || text == "世界吞噬者" || text == "rc" || text == "蠕虫" || int.TryParse(text, out num) && (num == NPCID.EaterofWorldsHead || num == NPCID.EaterofWorldsBody || num == NPCID.EaterofWorldsTail))
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.EaterofWorldsHead) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.EaterofWorldsBody) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.EaterofWorldsTail))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.EaterofWorldsHead) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.EaterofWorldsBody) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.EaterofWorldsTail))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.EaterofWorldsHead);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.EaterofWorldsBody);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.EaterofWorldsTail);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.EaterofWorldsHead);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.EaterofWorldsBody);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.EaterofWorldsTail);
                     bossName = "世界吞噬者";
                 }
             }
             else if (text == "kslzn" || text == "克苏鲁之脑" || text == "kn" || text == "克脑" || int.TryParse(text, out num) && (num == NPCID.BrainofCthulhu || num == NPCID.Creeper))
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.BrainofCthulhu) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.Creeper))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.BrainofCthulhu) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.Creeper))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.BrainofCthulhu);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.Creeper);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.BrainofCthulhu);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.Creeper);
                     bossName = Lang.GetNPCNameValue(NPCID.BrainofCthulhu);
                 }
             }
             else if (text == "fh" || text == "蜂后" || int.TryParse(text, out num) && num == NPCID.QueenBee)
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.QueenBee))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.QueenBee))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.QueenBee);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.QueenBee);
                     bossName = Lang.GetNPCNameValue(NPCID.QueenBee);
                 }
             }
             else if (text == "klw" || text == "骷髅王" || int.TryParse(text, out num) && num == NPCID.SkeletronHead)
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.SkeletronHead) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.SkeletronHand))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.SkeletronHead) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.SkeletronHand))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.SkeletronHead);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.SkeletronHand);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.SkeletronHead);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.SkeletronHand);
                     bossName = "骷髅王";
                 }
             }
             else if (text == "jl" || text == "巨鹿" || text == "ljg" || text == "鹿角怪" || int.TryParse(text, out num) && num == NPCID.Deerclops)
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.Deerclops))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.Deerclops))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.Deerclops);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.Deerclops);
                     bossName = Lang.GetNPCNameValue(NPCID.Deerclops);
                 }
             }
             else if (text == "xrq" || text == "血肉墙" || text == "rs" || text == "肉山" || int.TryParse(text, out num) && num == NPCID.WallofFlesh)
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.WallofFlesh) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.WallofFleshEye) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.TheHungry) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.TheHungryII))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.WallofFlesh) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.WallofFleshEye) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.TheHungry) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.TheHungryII))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.WallofFlesh);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.WallofFleshEye);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.TheHungry);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.TheHungryII);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.WallofFlesh);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.WallofFleshEye);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.TheHungry);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.TheHungryII);
                     bossName = Lang.GetNPCNameValue(NPCID.WallofFlesh);
                 }
             }
             else if (text == "slmhh" || text == "史莱姆皇后" || text == "sh" || text == "史后" || int.TryParse(text, out num) && num == NPCID.QueenSlimeBoss)
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.QueenSlimeBoss) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.QueenSlimeMinionBlue) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.QueenSlimeMinionPink) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.QueenSlimeMinionPurple))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.QueenSlimeBoss) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.QueenSlimeMinionBlue) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.QueenSlimeMinionPink) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.QueenSlimeMinionPurple))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.QueenSlimeBoss);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.QueenSlimeMinionBlue);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.QueenSlimeMinionPink);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.QueenSlimeMinionPurple);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.QueenSlimeBoss);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.QueenSlimeMinionBlue);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.QueenSlimeMinionPink);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.QueenSlimeMinionPurple);
                     bossName = Lang.GetNPCNameValue(NPCID.QueenSlimeBoss);
                 }
             }
             else if (text == "125" || text == "126" || text == "szmy" || text == "双子魔眼")
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(125) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(126))
+                if (config.ProtectedNPC_被保护的NPC.Contains(125) || config.ProtectedNPC_被保护的NPC.Contains(126))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(125);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(126);
+                    config.ProtectedNPC_被保护的NPC.Remove(125);
+                    config.ProtectedNPC_被保护的NPC.Remove(126);
                     bossName = "双子魔眼";
                 }
             }
             else if (text == "hmz" || text == "毁灭者" || text == "jxrc" || text == "机械蠕虫" || int.TryParse(text, out num) && (num == NPCID.TheDestroyer || num == NPCID.TheDestroyerBody || num == NPCID.TheDestroyerTail))
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.TheDestroyer) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.TheDestroyerBody) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.Probe) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.TheDestroyerTail))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.TheDestroyer) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.TheDestroyerBody) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.Probe) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.TheDestroyerTail))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.TheDestroyer);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.TheDestroyerBody);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.TheDestroyerTail);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.Probe);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.TheDestroyer);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.TheDestroyerBody);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.TheDestroyerTail);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.Probe);
                     bossName = "毁灭者";
                 }
             }
             else if (text == "jxklw" || text == "机械骷髅王" || int.TryParse(text, out num) && (num == NPCID.SkeletronPrime || num == NPCID.PrimeCannon || num == NPCID.PrimeSaw || num == NPCID.PrimeVice || num == NPCID.PrimeLaser))
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(127) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(128) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(131) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(130) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(129))
+                if (config.ProtectedNPC_被保护的NPC.Contains(127) || config.ProtectedNPC_被保护的NPC.Contains(128) || config.ProtectedNPC_被保护的NPC.Contains(131) || config.ProtectedNPC_被保护的NPC.Contains(130) || config.ProtectedNPC_被保护的NPC.Contains(129))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(127);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(128);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(129);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(130);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(131);
+                    config.ProtectedNPC_被保护的NPC.Remove(127);
+                    config.ProtectedNPC_被保护的NPC.Remove(128);
+                    config.ProtectedNPC_被保护的NPC.Remove(129);
+                    config.ProtectedNPC_被保护的NPC.Remove(130);
+                    config.ProtectedNPC_被保护的NPC.Remove(131);
                     bossName = "机械骷髅王";
                 }
             }
             else if (text == "sjzh" || text == "世纪之花" || text == "世花" || int.TryParse(text, out num) && num == NPCID.Plantera)
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.Plantera) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.PlanterasTentacle))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.Plantera) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.PlanterasTentacle))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.Plantera);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.PlanterasTentacle);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.Plantera);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.PlanterasTentacle);
                     bossName = Lang.GetNPCNameValue(NPCID.Plantera);
                 }
             }
             else if (text == "sjr" || text == "石巨人" || int.TryParse(text, out num) && num == NPCID.Golem)
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.Golem) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.GolemFistLeft) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.GolemFistRight) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.GolemHead))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.Golem) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.GolemFistLeft) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.GolemFistRight) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.GolemHead))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.Golem);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.GolemFistLeft);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.GolemFistRight);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.GolemHead);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.Golem);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.GolemFistLeft);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.GolemFistRight);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.GolemHead);
                     bossName = "石巨人";
                 }
             }
             else if (text == "zlygj" || text == "猪龙鱼公爵" || text == "zs" || text == "猪鲨" || int.TryParse(text, out num) && num == NPCID.DukeFishron)
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.DukeFishron) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.Sharkron) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.Sharkron2))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.DukeFishron) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.Sharkron) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.Sharkron2))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.DukeFishron);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.Sharkron);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.Sharkron2);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.DukeFishron);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.Sharkron);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.Sharkron2);
                     bossName = Lang.GetNPCNameValue(NPCID.DukeFishron);
                 }
             }
             else if (text == "636" || text == "gznh" || text == "光之女皇" || text == "gn" || text == "光女")
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.HallowBoss))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.HallowBoss))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.HallowBoss);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.HallowBoss);
                     bossName = Lang.GetNPCNameValue(NPCID.HallowBoss);
                 }
             }
             else if (text == "xjt" || text == "邪教徒" || text == "byxit" || text == "拜月邪教徒" || int.TryParse(text, out num) && num == NPCID.CultistBoss)
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.CultistBoss))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.CultistBoss))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.CultistBoss);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.CultistBoss);
                     bossName = Lang.GetNPCNameValue(NPCID.CultistBoss);
                 }
             }
             else if (text == "yqlz" || text == "月球领主" || text == "yllz" || text == "月亮领主" || text == "yz" || text == "月总" || int.TryParse(text, out num) && num == NPCID.MoonLordHead)
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.MoonLordHead) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.MoonLordHand) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.MoonLordCore) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.MoonLordLeechBlob))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.MoonLordHead) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.MoonLordHand) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.MoonLordCore) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.MoonLordLeechBlob))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.MoonLordHead);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.MoonLordHand);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.MoonLordCore);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.MoonLordLeechBlob);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.MoonLordHead);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.MoonLordHand);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.MoonLordCore);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.MoonLordLeechBlob);
                     bossName = "月球领主";
                 }
             }
             //四柱
             else if (text == "ryz" || text == "日耀柱" || int.TryParse(text, out num) && num == NPCID.LunarTowerSolar)
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.LunarTowerSolar))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.LunarTowerSolar))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.LunarTowerSolar);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.LunarTowerSolar);
                     bossName = Lang.GetNPCNameValue(NPCID.LunarTowerSolar);
                 }
             }
             else if (text == "xxz" || text == "星璇柱" || int.TryParse(text, out num) && num == NPCID.LunarTowerVortex)
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.LunarTowerVortex))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.LunarTowerVortex))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.LunarTowerVortex);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.LunarTowerVortex);
                     bossName = Lang.GetNPCNameValue(NPCID.LunarTowerVortex);
                 }
             }
             else if (text == "xcz" || text == "星尘柱" || int.TryParse(text, out num) && num == NPCID.LunarTowerStardust)
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.LunarTowerStardust))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.LunarTowerStardust))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.LunarTowerStardust);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.LunarTowerStardust);
                     bossName = Lang.GetNPCNameValue(NPCID.LunarTowerStardust);
                 }
             }
             else if (text == "xyz" || text == "星云柱" || int.TryParse(text, out num) && num == NPCID.LunarTowerNebula)
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.LunarTowerNebula))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.LunarTowerNebula))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.LunarTowerNebula);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.LunarTowerNebula);
                     bossName = Lang.GetNPCNameValue(NPCID.LunarTowerNebula);
                 }
             }
             //天国军团boss
             else if (text == "hafs" || text == "黑暗法师" || text == "hamfs" || text == "黑暗魔法师" || int.TryParse(text, out num) && (num == NPCID.DD2DarkMageT1 || num == NPCID.DD2DarkMageT3))
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.DD2DarkMageT1) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.DD2DarkMageT3))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.DD2DarkMageT1) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.DD2DarkMageT3))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.DD2DarkMageT1);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.DD2DarkMageT3);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.DD2DarkMageT1);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.DD2DarkMageT3);
                     bossName = Lang.GetNPCNameValue(NPCID.DD2DarkMageT1);
                 }
             }
             else if (text == "srm" || text == "食人魔" || int.TryParse(text, out num) && (num == NPCID.DD2OgreT2 || num == NPCID.DD2OgreT3))
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.DD2OgreT2) || config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.DD2OgreT3))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.DD2OgreT2) || config.ProtectedNPC_被保护的NPC.Contains(NPCID.DD2OgreT3))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.DD2OgreT2);
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.DD2OgreT3);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.DD2OgreT2);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.DD2OgreT3);
                     bossName = Lang.GetNPCNameValue(NPCID.DD2OgreT2);
                 }
             }
             else if (text == "szyl" || text == "双足翼龙" || text == "betsy" || text == "贝西塔" || int.TryParse(text, out num) && num == NPCID.DD2Betsy)
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.DD2Betsy))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.DD2Betsy))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.DD2Betsy);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.DD2Betsy);
                     bossName = Lang.GetNPCNameValue(NPCID.DD2Betsy);
                 }
             }
             //南瓜月，霜月
             else if (text == "am" || text == "哀木" || int.TryParse(text, out num) && num == NPCID.MourningWood)
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.MourningWood))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.MourningWood))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.MourningWood);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.MourningWood);
                     bossName = Lang.GetNPCNameValue(NPCID.MourningWood);
                 }
             }
             else if (text == "ngw" || text == "南瓜王" || int.TryParse(text, out num) && num == NPCID.Pumpking)
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.Pumpking))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.Pumpking))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.Pumpking);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.Pumpking);
                     bossName = Lang.GetNPCNameValue(NPCID.Pumpking);
                 }
             }
             else if (text == "cljjg" || text == "常绿尖叫怪" || text == "sds" || text == "圣诞树" || int.TryParse(text, out num) && num == NPCID.Everscream)
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.Everscream))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.Everscream))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.Everscream);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.Everscream);
                     bossName = Lang.GetNPCNameValue(NPCID.Everscream);
                 }
             }
             else if (text == "sdtk" || text == "圣诞坦克" || text == "sdlr" || text == "圣诞老人" || int.TryParse(text, out num) && num == NPCID.SantaNK1)
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.SantaNK1))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.SantaNK1))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.SantaNK1);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.SantaNK1);
                     bossName = Lang.GetNPCNameValue(NPCID.SantaNK1);
                 }
             }
             else if (text == "bxnh" || text == "冰雪女皇" || text == "bxnw" || text == "冰雪女王" || int.TryParse(text, out num) && num == NPCID.IceQueen)
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(NPCID.IceQueen))
+                if (config.ProtectedNPC_被保护的NPC.Contains(NPCID.IceQueen))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(NPCID.IceQueen);
+                    config.ProtectedNPC_被保护的NPC.Remove(NPCID.IceQueen);
                     bossName = Lang.GetNPCNameValue(NPCID.IceQueen);
                 }
             }
             //非boss
             else if (int.TryParse(text, out num) && num >= NpcIDMin && num <= NpcIDMax)
             {
-                if (config.BossAndMonsterProgress_Boss和怪物封禁.Contains(num))
+                if (config.ProtectedNPC_被保护的NPC.Contains(num))
                 {
-                    config.BossAndMonsterProgress_Boss和怪物封禁.Remove(num);
+                    config.ProtectedNPC_被保护的NPC.Remove(num);
                     bossName = Lang.GetNPCNameValue(num);
                 }
             }
@@ -1150,7 +1157,7 @@ namespace Watcher
 
             string str = "";
             int count = 0;
-            foreach (int v in config.BossAndMonsterProgress_Boss和怪物封禁)
+            foreach (int v in config.ProtectedNPC_被保护的NPC)
             {
                 str += Lang.GetNPCNameValue(v) + "  ";
                 count++;
