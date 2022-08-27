@@ -93,7 +93,7 @@
     "vip"
   ],
   "ignoreCheckedItemsID_不需要被作弊检查的物品id": [],                              //写入此处的物品id将不会被 物品进度检测功能 算进去
-  "BossAndMonsterProgress_Boss和怪物封禁": []                                       //写入此处的 npc.id （注意是npc.id 不是 item.id）将不会被杀死，可以用来保护boss，防止有人偷推进度，或者保护城镇npc
+  "ProtectedNPC_被保护的NPC": []                                                    //写入此处的 npc.id （注意是npc.id 不是 item.id）将不会被杀死，可以用来保护boss，防止有人偷推进度，或者保护城镇npc，或者保护松露虫等等
 }
 ```
 
