@@ -40,7 +40,7 @@ namespace Watcher
         /// <summary>
         /// Gets the version of this plugin.
         /// </summary>
-        public override Version Version => new Version(1, 0, 0, 0);
+        public override Version Version => new Version(1, 0, 0, 1);
 
         #region 数据与字段
         //日志文件夹
