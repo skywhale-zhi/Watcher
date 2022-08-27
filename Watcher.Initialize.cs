@@ -387,7 +387,7 @@ namespace Watcher
             File.AppendAllLines(logFilePath, new string[] { DateTime.Now.ToString("u") + $" INFORMATION [{player.Name}] 已离开，当前在线玩家{count}人：{sname}" });
         }
 
-
+        
         //击中npc时触发，向攻击保护动物的玩家发送消息,对保护动物进行回血保护
         private HookResult OnStrike(NPC npc, ref double cancelResult, ref int Damage, ref float knockBack, ref int hitDirection, ref bool crit, ref bool noEffect, ref bool fromNet, Entity entity)
         {
