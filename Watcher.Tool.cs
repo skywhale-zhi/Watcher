@@ -18,11 +18,30 @@ namespace Watcher
 {
     public partial class Watcher : TerrariaPlugin
     {
+        //获取从2020.1.1日到现在经过的秒数
+        public static long getNowTimeSecond()
+        {
+            DateTime centuryBegin = new DateTime(2020, 1, 1);
+            long elapsedTicks = DateTime.Now.Ticks - centuryBegin.Ticks;
+            return (elapsedTicks / 10000000L);
+        }
+
+        //获取从2020.1.1日到现在经过的嘀嗒数,60 tick == 1s
+        public static long getNowTimeTicks()
+        {
+            DateTime centuryBegin = new DateTime(2020, 1, 1);
+            long elapsedTicks = DateTime.Now.Ticks - centuryBegin.Ticks;
+            return (elapsedTicks / 166667L);
+        }
+
+
         //备份tshock.sqlite文件
         private void BackUpTshockSql()
         {
-            if ((int)(Main.timeForVisualEffects % (3600 * config.backupInterval_备份间隔)) != 0)
+            if ((getNowTimeSecond() % (60 * config.backupInterval_备份间隔)) != 0)
+            {
                 return;
+            }
 
             string tDirPath = Path.Combine(TShock.SavePath + "/Watcher/tshock_backups");
             string tFilePath = Path.Combine(tDirPath, DateTime.Now.ToString("u").Replace(":", "-") + "_tshock.sqlite");
@@ -41,8 +60,8 @@ namespace Watcher
         //物品作弊检测方法
         private void ItemCheatingCheck(EventArgs args, object sender, GetDataHandlers.PlayerSlotEventArgs e, int Model = 0)
         {
-            //Model = 1, 15分钟全员检测一次
-            if (Model == 1 && (int)Main.timeForVisualEffects % (60 * 60 * 5) == 0) //大致15分钟 = 54000
+            //Model == 1 , 5分钟在线全员检测一次
+            if (Model == 1 && getNowTimeSecond() % 300 == 0) //大致5分钟
             {
                 foreach (TSPlayer v in TShock.Players)
                 {
@@ -67,64 +86,90 @@ namespace Watcher
 
                     foreach (Item i in items)
                     {
-                        //如果是豁免物品，不算作弊
-                        if (config.ignoreCheckedItemsID_不需要被作弊检查的物品id.Contains(i.type))
+                        //如果是豁免物品并且不在强制检查物里，不算作弊
+                        if (config.ignoreCheckedItemsID_不需要被作弊检查的物品id.Contains(i.type) && !config.MustBeCheckedItemsID_必须被检查的物品_覆盖上面一条.Contains(i.type))
                         {
                             continue;
                         }
                         bool isCheat = false;
-                        if (!NPC.downedAncientCultist && CheatData.AfterLunaticCultist.Contains(i.type))
+                        //如果是强制检查物，直接结束下面的检查过程
+                        if (config.MustBeCheckedItemsID_必须被检查的物品_覆盖上面一条.Contains(i.type))
                         {
                             isCheat = true;
                         }
-                        else if (!Main.hardMode && CheatData.AfterHardBeforeOneOfThree.Contains(i.type))
+                        else
                         {
-                            isCheat = true;
+                            if (!NPC.downedAncientCultist && CheatData.AfterLunaticCultist.Contains(i.type))
+                            {
+                                isCheat = true;
+                            }
+                            else if (!Main.hardMode && CheatData.AfterHardBeforeOneOfThree.Contains(i.type))
+                            {
+                                isCheat = true;
+                            }
+                            else if (!NPC.downedFishron && CheatData.DukeFishron.Contains(i.type))
+                            {
+                                isCheat = true;
+                            }
+                            else if (!NPC.downedEmpressOfLight && CheatData.EmpressofLight.Contains(i.type))
+                            {
+                                isCheat = true;
+                            }
+                            else if (!NPC.downedBoss3 && CheatData.AfterBoss3BeforeHard.Contains(i.type))
+                            {
+                                isCheat = true;
+                            }
+                            else if (!NPC.downedMechBossAny && CheatData.AfterAnyMechanics.Contains(i.type))
+                            {
+                                isCheat = true;
+                            }
+                            else if (!(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3) && CheatData.AfterMechanicsBeforePlantera.Contains(i.type))
+                            {
+                                isCheat = true;
+                            }
+                            else if (!NPC.downedPlantBoss && CheatData.AfterPlanteraBeforeGolem.Contains(i.type))
+                            {
+                                isCheat = true;
+                            }
+                            else if (!NPC.downedGolemBoss && CheatData.AfterGolemBeforeCultist.Contains(i.type))
+                            {
+                                isCheat = true;
+                            }
+                            //这里考虑10周年蒸汽朋克的情况
+                            else if (!NPC.downedMechBossAny && (!Main.tenthAnniversaryWorld && (CheatData.AfterMechanicsBeforePlantera.Contains(i.type) || CheatData.Steampunker.Contains(i.type)) || Main.tenthAnniversaryWorld && CheatData.AfterMechanicsBeforePlantera.Contains(i.type)))
+                            {
+                                isCheat = true;
+                            }
+                            //高射速子弹和肉后，三王后，十周年的关系(怎么这么乱)
+                            else if (!Main.hardMode && Main.tenthAnniversaryWorld && i.type == 1302 || !NPC.downedMechBossAny && i.type == 1302)
+                            {
+                                isCheat = true;
+                            }
                         }
-                        else if (!NPC.downedFishron && CheatData.DukeFishron.Contains(i.type))
-                        {
-                            isCheat = true;
-                        }
-                        else if (!NPC.downedEmpressOfLight && CheatData.EmpressofLight.Contains(i.type))
-                        {
-                            isCheat = true;
-                        }
-                        else if (!NPC.downedBoss3 && CheatData.AfterBoss3BeforeHard.Contains(i.type))
-                        {
-                            isCheat = true;
-                        }
-                        else if(!NPC.downedMechBossAny && CheatData.AfterMechanicsBeforePlantera.Contains(i.type))
-                        {
-                            isCheat = true;
-                        }
-                        //这里考虑10周年蒸汽朋克的情况
-                        else if (!NPC.downedMechBossAny && (!Main.tenthAnniversaryWorld && (CheatData.AfterMechanicsBeforePlantera.Contains(i.type) || CheatData.Steampunker.Contains(i.type)) || Main.tenthAnniversaryWorld && CheatData.AfterMechanicsBeforePlantera.Contains(i.type)))
-                        {
-                            isCheat = true;
-                        }
-
                         if (isCheat)
                         {
-                            int num = CheakingPlayers(v, "item");
+                            int num = CheatingPlayers(v, 3);
+                            Console.WriteLine($" WARNING [acc:{v.Account.ID}][{v.Name}] 携带不属于这个时期的物品或系统设置违禁物 {i.Name} [id:{i.type}] 在 {v.LastNetPosition / 16} 违规次数 {num}");
+                            AvoidLogSize("logDirPath", logDirPath, logFilePath);
+                            AvoidLogSize("cheatLogDirPath", cheatLogDirPath, cheatLogFilePath);
                             if (num < config.numberOfBan_允许的违规次数)
                             {
-                                v.Kick($"携带不属于这个时期的物品：{i.Name} 违规次数 {num}，若有疑问请及时向管理员联系");
+                                v.Kick($"携带不属于这个时期的物品或系统设置违禁物：{i.Name} [id:{i.type}]\n违规次数 {num}，若有疑问请及时向管理员联系");
+                                File.AppendAllLines(logFilePath, new string[] { DateTime.Now.ToString("u") + $" WARNING [acc:{v.Account.ID}][{v.Name}] 携带不属于这个时期的物品或系统设置违禁物 {i.Name} [id:{i.type}] 在 {v.LastNetPosition / 16} 违规次数 {num}" });
+                                File.AppendAllLines(cheatLogFilePath, new string[] { DateTime.Now.ToString("u") + $" WARNING [acc:{v.Account.ID}][{v.Name}] 携带不属于这个时期的物品或系统设置违禁物 {i.Name} [id:{i.type}] 在 {v.LastNetPosition / 16} 违规次数 {num}" });
                             }
                             else
                             {
-                                v.Ban($"总计违规次数已达到{config.numberOfBan_允许的违规次数}次！若有疑问请及时联系管理员", true);
+                                v.Ban($"总计违规次数已达到{config.numberOfBan_允许的违规次数}次！若有疑问请及时联系管理员");
+                                File.AppendAllLines(logFilePath, new string[] { DateTime.Now.ToString("u") + $" WARNING BAN [acc:{v.Account.ID}][{v.Name}] 携带不属于这个时期的物品或系统设置违禁物 {i.Name} [id:{i.type}] 在 {v.LastNetPosition / 16} 违规次数 {num} 已封禁" });
+                                File.AppendAllLines(cheatLogFilePath, new string[] { DateTime.Now.ToString("u") + $" WARNING BAN [acc:{v.Account.ID}][{v.Name}] 携带不属于这个时期的物品或系统设置违禁物 {i.Name} [id:{i.type}] 在 {v.LastNetPosition / 16} 违规次数 {num} 已封禁" });
                             }
-                            Console.WriteLine($" WARNING [acc:{v.Account.ID}][{v.Name}] 携带不属于这个时期的物品 {i.Name} 在 {v.LastNetPosition / 16} 违规次数 {num}");
-                            AvoidLogSize("logDirPath", logDirPath, logFilePath);
-                            AvoidLogSize("cheatLogDirPath", cheatLogDirPath, cheatLogFilePath);
-                            File.AppendAllLines(logFilePath, new string[] { DateTime.Now.ToString("u") + $" WARNING [acc:{v.Account.ID}][{v.Name}] 携带不属于这个时期的物品 {i.Name} 在 {v.LastNetPosition / 16} 违规次数 {num}" });
-                            File.AppendAllLines(cheatLogFilePath, new string[] { DateTime.Now.ToString("u") + $" WARNING [acc:{v.Account.ID}][{v.Name}] 携带不属于这个时期的物品 {i.Name} 在 {v.LastNetPosition / 16} 违规次数 {num}" });
                         }
                     }
-
                 }
             }
-            //单人触发检测
+
+            //Model == 2 , 单人触发检测(每次拿取时触发)
             if (Model == 2)
             {
                 if (!KickOrBanGroupAllow(e.Player))
@@ -147,54 +192,83 @@ namespace Watcher
 
                 foreach (Item i in items)
                 {
-                    //如果是豁免物品，不算作弊
-                    if (config.ignoreCheckedItemsID_不需要被作弊检查的物品id.Contains(i.type))
+                    //如果是豁免物品并且不属于强制检查物，不算作弊
+                    if (config.ignoreCheckedItemsID_不需要被作弊检查的物品id.Contains(i.type) && !config.MustBeCheckedItemsID_必须被检查的物品_覆盖上面一条.Contains(i.type))
                     {
                         continue;
                     }
                     bool isCheat = false;
-                    if (!NPC.downedAncientCultist && CheatData.AfterLunaticCultist.Contains(i.type))
+                    if (config.MustBeCheckedItemsID_必须被检查的物品_覆盖上面一条.Contains(i.type))
                     {
                         isCheat = true;
                     }
-                    else if (!Main.hardMode && CheatData.AfterHardBeforeOneOfThree.Contains(i.type))
+                    else
                     {
-                        isCheat = true;
+                        if (!NPC.downedAncientCultist && CheatData.AfterLunaticCultist.Contains(i.type))
+                        {
+                            isCheat = true;
+                        }
+                        else if (!Main.hardMode && CheatData.AfterHardBeforeOneOfThree.Contains(i.type))
+                        {
+                            isCheat = true;
+                        }
+                        else if (!NPC.downedFishron && CheatData.DukeFishron.Contains(i.type))
+                        {
+                            isCheat = true;
+                        }
+                        else if (!NPC.downedEmpressOfLight && CheatData.EmpressofLight.Contains(i.type))
+                        {
+                            isCheat = true;
+                        }
+                        else if (!NPC.downedBoss3 && CheatData.AfterBoss3BeforeHard.Contains(i.type))
+                        {
+                            isCheat = true;
+                        }
+                        else if (!NPC.downedMechBossAny && CheatData.AfterAnyMechanics.Contains(i.type))
+                        {
+                            isCheat = true;
+                        }
+                        else if (!(NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3) && CheatData.AfterMechanicsBeforePlantera.Contains(i.type))
+                        {
+                            isCheat = true;
+                        }
+                        else if (!NPC.downedPlantBoss && CheatData.AfterPlanteraBeforeGolem.Contains(i.type))
+                        {
+                            isCheat = true;
+                        }
+                        else if (!NPC.downedGolemBoss && CheatData.AfterGolemBeforeCultist.Contains(i.type))
+                        {
+                            isCheat = true;
+                        }
+                        //这里考虑10周年蒸汽朋克的情况
+                        else if (!NPC.downedMechBossAny && (!Main.tenthAnniversaryWorld && (CheatData.AfterMechanicsBeforePlantera.Contains(i.type) || CheatData.Steampunker.Contains(i.type)) || Main.tenthAnniversaryWorld && CheatData.AfterMechanicsBeforePlantera.Contains(i.type)))
+                        {
+                            isCheat = true;
+                        }
+                        //高射速子弹和肉后，三王后，十周年的关系(怎么这么乱)
+                        else if (!Main.hardMode && Main.tenthAnniversaryWorld && i.type == 1302 || !NPC.downedMechBossAny && i.type == 1302)
+                        {
+                            isCheat = true;
+                        }
                     }
-                    else if (!NPC.downedFishron && CheatData.DukeFishron.Contains(i.type))
-                    {
-                        isCheat = true;
-                    }
-                    else if (!NPC.downedEmpressOfLight && CheatData.EmpressofLight.Contains(i.type))
-                    {
-                        isCheat = true;
-                    }
-                    else if (!NPC.downedBoss3 && CheatData.AfterBoss3BeforeHard.Contains(i.type))
-                    {
-                        isCheat = true;
-                    }
-                    //这里考虑10周年蒸汽朋克的情况
-                    else if (!NPC.downedMechBossAny && (!Main.tenthAnniversaryWorld && (CheatData.AfterMechanicsBeforePlantera.Contains(i.type) || CheatData.Steampunker.Contains(i.type)) || Main.tenthAnniversaryWorld && CheatData.AfterMechanicsBeforePlantera.Contains(i.type)))
-                    {
-                        isCheat = true;
-                    }
-
                     if (isCheat)
                     {
-                        int num = CheakingPlayers(e.Player, "item");
+                        int num = CheatingPlayers(e.Player, 3);
+                        Console.WriteLine($" WARNING [acc:{e.Player.Account.ID}][{e.Player.Name}] 携带不属于这个时期的物品或系统设置违禁物 {i.Name} [id:{i.type}] 在 {e.Player.LastNetPosition / 16} 违规次数 {num}");
+                        AvoidLogSize("logDirPath", logDirPath, logFilePath);
+                        AvoidLogSize("cheatLogDirPath", cheatLogDirPath, cheatLogFilePath);
                         if (num < config.numberOfBan_允许的违规次数)
                         {
-                            e.Player.Kick($"携带不属于这个时期的物品：{i.Name} 违规次数 {num}，若有疑问请及时向管理员联系");
+                            e.Player.Kick($"携带不属于这个时期的物品或系统设置违禁物：{i.Name} [id:{i.type}]\n违规次数 {num}，若有疑问请及时向管理员联系");
+                            File.AppendAllLines(logFilePath, new string[] { DateTime.Now.ToString("u") + $" WARNING [acc:{e.Player.Account.ID}][{e.Player.Name}] 携带不属于这个时期的物品或系统设置违禁物 {i.Name} [id:{i.type}] 在 {e.Player.LastNetPosition / 16} 违规次数 {num}" });
+                            File.AppendAllLines(cheatLogFilePath, new string[] { DateTime.Now.ToString("u") + $" WARNING [acc:{e.Player.Account.ID}][{e.Player.Name}] 携带不属于这个时期的物品或系统设置违禁物 {i.Name} [id:{i.type}] 在 {e.Player.LastNetPosition / 16} 违规次数 {num}" });
                         }
                         else
                         {
-                            e.Player.Ban($"总计违规次数已达到{config.numberOfBan_允许的违规次数}次！若有疑问请及时联系管理员", true);
+                            e.Player.Ban($"总计违规次数已达到{config.numberOfBan_允许的违规次数}次！若有疑问请及时联系管理员");
+                            File.AppendAllLines(logFilePath, new string[] { DateTime.Now.ToString("u") + $" WARNING BAN [acc:{e.Player.Account.ID}][{e.Player.Name}] 携带不属于这个时期的物品或系统设置违禁物 {i.Name} [id:{i.type}] 在 {e.Player.LastNetPosition / 16} 违规次数 {num} 已封禁" });
+                            File.AppendAllLines(cheatLogFilePath, new string[] { DateTime.Now.ToString("u") + $" WARNING BAN [acc:{e.Player.Account.ID}][{e.Player.Name}] 携带不属于这个时期的物品或系统设置违禁物 {i.Name} [id:{i.type}] 在 {e.Player.LastNetPosition / 16} 违规次数 {num} 已封禁" });
                         }
-                        Console.WriteLine($" WARNING [acc:{e.Player.Account.ID}][{e.Player.Name}] 携带不属于这个时期的物品 {i.Name} 在 {e.Player.LastNetPosition / 16} 违规次数 {num}");
-                        AvoidLogSize("logDirPath", logDirPath, logFilePath);
-                        AvoidLogSize("cheatLogDirPath", cheatLogDirPath, cheatLogFilePath);
-                        File.AppendAllLines(logFilePath, new string[] { DateTime.Now.ToString("u") + $" WARNING [acc:{e.Player.Account.ID}][{e.Player.Name}] 携带不属于这个时期的物品 {i.Name} 在 {e.Player.LastNetPosition / 16} 违规次数 {num}" });
-                        File.AppendAllLines(cheatLogFilePath, new string[] { DateTime.Now.ToString("u") + $" WARNING [acc:{e.Player.Account.ID}][{e.Player.Name}] 携带不属于这个时期的物品 {i.Name} 在 {e.Player.LastNetPosition / 16} 违规次数 {num}" });
                     }
                 }
             }
@@ -228,8 +302,6 @@ namespace Watcher
             {
                 File.CreateText(filePath).Close();
             }
-            //自动删除15d前的旧日志，每次启动游戏时
-            //DeleteOldFiles(dirPath, config.logAndCheatLogBackUpTime_日志和作弊记录日志的备份时常);
         }
 
 
@@ -254,7 +326,8 @@ namespace Watcher
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.ToString());
+                Console.WriteLine(e.Message);
+                TShock.Log.Error(e.Message);
             }
         }
 
@@ -280,7 +353,7 @@ namespace Watcher
         //定期日志清理，不要让日志过多
         private void LogClean()
         {
-            if (Main.timeForVisualEffects == 100 || Main.timeForVisualEffects % (3600 * 60 * 5) == 0)
+            if (getNowTimeSecond() % 7200 == 0)   //两小时清理一次
             {
                 DeleteOldFiles(logDirPath, config.logAndCheatLogBackUpTime_日志和作弊记录日志的备份时常);
                 DeleteOldFiles(cheatLogDirPath, config.logAndCheatLogBackUpTime_日志和作弊记录日志的备份时常);
@@ -289,37 +362,59 @@ namespace Watcher
 
 
         //作弊人员的信息记录
-        private int CheakingPlayers(TSPlayer e, string cheakType)
+        /// <summary>
+        /// 计算总计作弊次数，每调用一次，作弊次数+1
+        /// </summary>
+        /// <param name="e"></param>
+        /// <param name="cheatType">作弊类型 1：钓鱼作弊，2：射弹伤害作弊，3：物品作弊，4: 星璇机枪作弊</param>，
+        /// <returns>返回计算后的作弊次数</returns>
+        private int CheatingPlayers(TSPlayer e, int cheatType)
         {
-            int cheakTimes = 0;
-            if (OnlineCheakingPlayers.Any())
+            int cheatTimes = 0;
+            foreach (WPlayer w in wPlayers)
             {
-                for (int i = 0; i < OnlineCheakingPlayers.Count; i++)
+                if (w.uuid == e.UUID)
                 {
-                    if (OnlineCheakingPlayers[i][0] == e.Name)
+                    w.cheatingTimes++;
+                    switch (cheatType)
                     {
-                        OnlineCheakingPlayers[i][1] = (int.Parse(OnlineCheakingPlayers[i][1]) + 1).ToString();
-                        if (!OnlineCheakingPlayers[i][2].Contains(cheakType))
-                        {
-                            OnlineCheakingPlayers[i][2] += " " + cheakType;
-                        }
-                        cheakTimes = int.Parse(OnlineCheakingPlayers[i][1]);
-                        if (cheakTimes >= config.numberOfBan_允许的违规次数)
-                        {
-                            OnlineCheakingPlayers[i][1] = "0";
-                        }
-                        break;
+                        case 1:
+                            w.isFishCheat = true;
+                            break;
+                        case 2:
+                            w.isProjDamageCheat = true;
+                            break;
+                        case 3:
+                            w.isItemCheat = true;
+                            break;
+                        default:
+                            break;
                     }
+                    cheatTimes = w.cheatingTimes;
+                    if (w.cheatingTimes >= config.numberOfBan_允许的违规次数)
+                    {
+                    }
+                    break;
                 }
             }
+            return cheatTimes;
+        }
 
-            if (cheakTimes == 0)
+        /// <summary>
+        /// 返回这个玩家的作弊次数
+        /// </summary>
+        /// <param name="e"></param>
+        /// <returns></returns>
+        private int getCheatTimes(TSPlayer e)
+        {
+            foreach (WPlayer w in wPlayers)
             {
-                OnlineCheakingPlayers.Add(new string[] { e.Name, "1", cheakType, "" });
-                cheakTimes = 1;
+                if (w.uuid == e.UUID)
+                {
+                    return w.cheatingTimes;
+                }
             }
-            //Console.WriteLine($"玩家{e.Player.Name}已作弊{cheakTimes}次");
-            return cheakTimes;
+            return 0;
         }
 
 

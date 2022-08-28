@@ -9,7 +9,7 @@ namespace Watcher
     public class Config
     {
         static string configPath = Path.Combine(TShock.SavePath + "/Watcher", "WatcherConfig.json");
-        public static void SetConfigFile()
+        public static Config LoadConfigFile()
         {
             if (!File.Exists(configPath))
             {
@@ -17,26 +17,25 @@ namespace Watcher
                     new HashSet<int> { 2, 3, 8, 9, 27, 40, 42, 71, 72, 93, 94, 97, 129, 168, 607, 965, 2119, 2274, 2260, 2261, 2262, 2263, 2264, 2271, 3905, 3908, 4547, 4548, 4564, 4565, 4580, 4962 },
                     new HashSet<int> { 0, 2, 3, 23, 58, 71, 72, 73, 169, 172, 176, 184, 409, 593, 664, 1734, 1735, 1867, 1868 },
                     new HashSet<int> {
-                        17, 28, 29, 37, 42, 65, 68, 69, 70, 99, 108, 133, 134, 135, 136,
+                        10, 11, 17, 28, 29, 37, 42, 65, 68, 69, 70, 80, 99, 108, 133, 134, 135, 136,
                         137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149,
-                        158, 159, 160, 161, 164, 281, 338, 339, 340, 341, 354, 463, 470, 516,
-                        519, 621, 637, 715, 716, 717, 718, 727, 773, 776, 777, 778, 780, 781,
-                        782, 784, 785, 786, 787, 788, 789, 790, 791, 792, 793, 794, 795,
+                        158, 159, 160, 161, 164, 281, 338, 339, 340, 341, 354, 370, 371, 463, 470, 516,
+                        519, 621, 637, 715, 716, 717, 718, 727, 773, 776, 777, 778, 779, 780, 781,
+                        782, 783, 784, 785, 786, 787, 788, 789, 790, 791, 792, 793, 794, 795,
                         796, 797, 798, 799, 800, 801, 803, 804, 805, 806, 807, 808, 809,
-                        810, 903, 904, 905, 906, 910, 911},
-                    true, 20, 2880, true, true, true, 7, new string[] { "default", "vip" },
-                    new HashSet<int> {},
-                    new List<int> {}
+                        810, 862, 863, 868, 869, 903, 904, 905, 906, 910, 911},
+                    true, 20, 2880, true, true, true, 10, new string[] { "default", "vip" },
+                    new HashSet<int> { },
+                    new HashSet<int> { },
+                    new List<int> { }
                     ), Formatting.Indented));
             }
+
+            Config c = JsonConvert.DeserializeObject<Config>(File.ReadAllText(configPath));
+            return c;
         }
 
-        public static Config ReadConfigFile()
-        {
-            return JsonConvert.DeserializeObject<Config>(File.ReadAllText(configPath));
-        }
-
-        public Config(bool b0, bool b1, bool b2, bool b3, bool b4, int num1, int num2, HashSet<int> hs1, HashSet<int> hs2, HashSet<int> hs3, bool b5, int num6, int num7, bool b8, bool b9, bool b10, int num8, string[] str1, HashSet<int> hs4, List<int> l1)
+        public Config(bool b0, bool b1, bool b2, bool b3, bool b4, int num1, int num2, HashSet<int> hs1, HashSet<int> hs2, HashSet<int> hs3, bool b5, int num6, int num7, bool b8, bool b9, bool b10, int num8, string[] str1, HashSet<int> hs4, HashSet<int> hs5, List<int> l1)
         {
             enableChinese_启用中文 = b0;
             whetherToWriteTheConversationContentInTheLog_是否把对话内容写入日志 = b1;
@@ -62,6 +61,7 @@ namespace Watcher
             numberOfBan_允许的违规次数 = num8;
             needCheckedPlayerGroups_需要被检测的玩家组 = str1;
             ignoreCheckedItemsID_不需要被作弊检查的物品id = hs4;
+            MustBeCheckedItemsID_必须被检查的物品_覆盖上面一条 = hs5;
             ProtectedNPC_被保护的NPC = l1;
         }
 
@@ -87,6 +87,8 @@ namespace Watcher
         public int numberOfBan_允许的违规次数;
         public string[] needCheckedPlayerGroups_需要被检测的玩家组;
         public HashSet<int> ignoreCheckedItemsID_不需要被作弊检查的物品id;
+        public HashSet<int> MustBeCheckedItemsID_必须被检查的物品_覆盖上面一条;
+
         public List<int> ProtectedNPC_被保护的NPC;
     }
 }

@@ -54,42 +54,26 @@ namespace Watcher
         //config文件路径
         public string configPath = Path.Combine(TShock.SavePath + "/Watcher", "WatcherConfig.json");
         //item的id上下限
-        public const int ItemIDMax = 5124, ItemIDMin = 1;
+        public const int ItemIDMax = Main.maxItemTypes, ItemIDMin = 1;
         //npc的id上下限
-        public const int NpcIDMax = 669, NpcIDMin = -65;
-        //作弊人员信息记录
-        //[0]：玩家名称  [1]：违规次数  [2]：违规类型  [3]：计时器。违规类型：“damage”，“fishing”，“item” 分别为 伤害溢出，多杆钓鱼，不合理物品 三种作弊
-        public List<string[]> OnlineCheakingPlayers = new List<string[]>();
+        public const int NpcIDMax = Main.maxNPCTypes, NpcIDMin = -65;
+        //作弊玩家信息记录
+        public List<WPlayer> wPlayers = new List<WPlayer>();
         //config变量
         public Config config;
         #endregion
 
 
-        /// <summary>
-        /// Initializes a new instance of the TestPlugin class.
-        /// This is where you set the plugin's order and perfrom other constructor logic
-        ///初始化TestPlugin类的新实例。
-        ///这是设置插件顺序和性能的地方，来自其他构造函数逻辑
-        /// </summary>
         public Watcher(Main game) : base(game)
         {
         }
 
 
-        /// <summary>
-        /// Handles plugin initialization. 
-        /// Fired when the server is started and the plugin is being loaded.
-        /// You may register hooks, perform loading procedures etc here.
-        ///处理插件初始化。
-        ///在服务器启动和插件加载时触发。
-        ///您可以在此处注册挂钩、执行加载过程等。
-        /// </summary>
         public override void Initialize()
         {
             SetWatcherFile("logDirPath", logDirPath);
             SetWatcherFile("cheatLogDirPath", cheatLogDirPath);
-            Config.SetConfigFile();
-            config = Config.ReadConfigFile();
+            config = Config.LoadConfigFile();
             CheatData.SetCheatData();
 
             if (config.enableChinese_启用中文)
@@ -100,33 +84,42 @@ namespace Watcher
             //将聊天写入日志
             ServerApi.Hooks.ServerChat.Register(this, OnChat);
             //丢弃物品写入日志
-            GetDataHandlers.ItemDrop.Register(SetDropItemLog);
+            GetDataHandlers.ItemDrop += SetDropItemLog;
             //持有物品写入日志
-            GetDataHandlers.PlayerSlot.Register(SetItemLog);
+            GetDataHandlers.PlayerSlot += SetItemLog;
             //生成射弹写入日志
-            GetDataHandlers.NewProjectile.Register(SetProjLog);
-            //召唤boss写入日志
-            //ServerApi.Hooks.NetGetData.Register(this, SummonBoss);
-            //放置物写入日志
-            //GetDataHandlers.PlaceObject.Register(PlaceTiles);
+            GetDataHandlers.NewProjectile += SetProjLog;
             //每秒服务器更新执行一次
             ServerApi.Hooks.GameUpdate.Register(this, GameRun);
             //射弹作弊检查
-            GetDataHandlers.NewProjectile.Register(ProjCheatingCheck);
+            GetDataHandlers.NewProjectile += ProjCheatingCheck;
             //持有物品时，检查背包
-            GetDataHandlers.PlayerSlot.Register(ItemCheatingCheck);
+            GetDataHandlers.PlayerSlot += ItemCheatingCheck;
             //检查登录的人是否是作弊人员
             ServerApi.Hooks.ServerJoin.Register(this, OnServerjoin);
             ServerApi.Hooks.ServerLeave.Register(this, OnServerLeave);
             //击中npc时触发，向攻击保护动物的玩家发送消息,对保护动物进行回血保护
-            Hooks.Npc.Strike += OnStrike;
+            ServerApi.Hooks.NpcStrike.Register(this, OnStrike);
+            
+            //Hooks.NPC.Strike += OnStrike;
             //这里当boss生成是发送警告此为保护动物的消息
             ServerApi.Hooks.NpcSpawn.Register(this, OnNpcSpawn);
-
+            
 
             GeneralHooks.ReloadEvent += OnReload;
 
             #region 指令
+
+            Commands.ChatCommands.Add(new Command("watcher.clearcheatdata", ClearCheatData, "clearcd", "CLEARCD")
+            {
+                HelpText = "输入 /clearcd 【玩家名称】 来清理该玩家的作弊数据\nEnter /clearcd [player name] To clear the player's cheating data"
+            }); 
+            Commands.ChatCommands.Add(new Command("watcher.clearcheatdata", ClearCheatDataAll, "clearcdall", "CLEARCDALL")
+            {
+                HelpText = "输入 /clearcdall 来清理所有玩家的作弊数据\nEnter /clearcd [player name] To clear the cheating data of all players"
+            });
+
+
             Commands.ChatCommands.Add(new Command("watcher.locknpc", LockNpc, "locknpc", "LOCKNPC", "Locknpc")
             {
                 HelpText = "输入 /locknpc 【NPC id/Boss 汉字名称/Boss 拼音缩写】 来封禁玩家对该boss或npc攻击\nEnter /lock [NPC id] To block the player from attacking the boss or NPC"
@@ -153,44 +146,48 @@ namespace Watcher
             {
                 HelpText = "输入 /listuci 来查看所有不被系统检查的物品\nEnter /listuci  To view all items that are not checked by the system"
             });
+
+
+            Commands.ChatCommands.Add(new Command("watcher.addmustcheckeditem", AddMustCheckedItem, "addmci", "ADDMCI")
+            {
+                HelpText = "输入 /addmci 【item:id】 来添加必定被系统检查的物品（强制检查豁免物）\nEnter /addmci [item:id] To add items that must be checked by the system (will cover unchecked items)"
+            });
+            Commands.ChatCommands.Add(new Command("watcher.delmustcheckeditem", DelMustCheckedItem, "delmci", "DELMCI")
+            {
+                HelpText = "输入 /delmci 【item:id】 来删除必定被系统检查的物品（强制检查豁免物）\nEnter /delmci [item:id] To delete items that must be checked by the system (will cover unchecked items)"
+            });
+            Commands.ChatCommands.Add(new Command("watcher.listmustcheckeditem", ListMustCheckedItem, "listmci", "LISTMCI")
+            {
+                HelpText = "输入 /listmci 来查看所有被强制检查检查的物品\nEnter /listmci  To view all items subject to mandatory inspection"
+            });
+
             #endregion
 
-            //ServerApi.Hooks.NpcKilled.Register(this, new HookHandler<NpcKilledEventArgs>(this.OnNpcKilled));
-            //ServerApi.Hooks.ServerLeave.Register(this, new HookHandler<LeaveEventArgs>(this.OnServerLeave));
         }
 
 
-        /// <summary>
-        /// Handles plugin disposal logic.
-        /// *Supposed* to fire when the server shuts down.
-        /// You should deregister hooks and free all resources here.
-        ///处理插件处理逻辑。
-        ///*Supposed**应该*在服务器关闭时触发。
-        ///您应该取消注册挂钩并释放此处的所有资源。
-        /// </summary>
         protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
                 ServerApi.Hooks.ServerChat.Deregister(this, OnChat);
-                //GetDataHandlers.ItemDrop.UnRegister(SetDropItemLog);
-                //GetDataHandlers.PlayerSlot.UnRegister(SetItemLog);
-                //GetDataHandlers.NewProjectile.UnRegister(SetProjLog);
+                GetDataHandlers.ItemDrop -= SetDropItemLog;
+                GetDataHandlers.PlayerSlot -= SetItemLog;
+                GetDataHandlers.NewProjectile -= SetProjLog;
+
                 ServerApi.Hooks.GameUpdate.Deregister(this, GameRun);
-                //GetDataHandlers.NewProjectile.UnRegister(ProjCheatingCheck);
-                //GetDataHandlers.PlayerSlot.UnRegister(ItemCheatingCheck);
+                GetDataHandlers.NewProjectile -= ProjCheatingCheck;
+                GetDataHandlers.PlayerSlot -= ItemCheatingCheck;
                 ServerApi.Hooks.ServerJoin.Deregister(this, OnServerjoin);
                 ServerApi.Hooks.ServerLeave.Deregister(this, OnServerLeave);
-                //ServerApi.Hooks.NetGetData.Deregister(this, SummonBoss);
-                Hooks.Npc.Strike -= OnStrike;
+                //Hooks.Npc.Strike -= OnStrike;
+
+                ServerApi.Hooks.NpcStrike.Deregister(this, OnStrike);
+
                 ServerApi.Hooks.NpcSpawn.Deregister(this, OnNpcSpawn);
 
 
                 GeneralHooks.ReloadEvent -= OnReload;
-
-                //GetDataHandlers.PlayerSlot.UnRegister(TestItem);
-                //ServerApi.Hooks.NpcKilled.Deregister(this, new HookHandler<NpcKilledEventArgs>(this.OnNpcKilled));
-                //ServerApi.Hooks.ServerLeave.Deregister(this, new HookHandler<LeaveEventArgs>(this.OnServerLeave));
             }
             base.Dispose(disposing);
         }

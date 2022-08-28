@@ -38,6 +38,13 @@
     <Reference Include="HttpServer">
       <HintPath>C:\Users\86199\Desktop\tl\泰拉瑞亚开服工具\TShock4.5.17_Terraria_1.4.3.6\HttpServer.dll</HintPath>
     </Reference>
+    <Reference Include="ModFramework">
+      <HintPath>C:\Users\86199\Desktop\tl\泰拉瑞亚开服工具\插件开发所需要的库文件\库文件5.0\ModFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Data.Sqlite, Version=2.0.0.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Users\86199\Desktop\tl\泰拉瑞亚开服工具\插件开发所需要的库文件\库文件4.5.18\Mono.Data.Sqlite.dll</HintPath>
+    </Reference>
     <Reference Include="MySql.Data, Version=8.0.29.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Users\86199\Desktop\tl\泰拉瑞亚开服工具\插件开发所需要的库文件\库文件4.5.18\MySql.Data.dll</HintPath>
@@ -46,9 +53,12 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\Users\86199\Desktop\tl\泰拉瑞亚开服工具\插件开发所需要的库文件\库文件4.5.18\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="OTAPI, Version=1.4.3.6, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="OTAPI, Version=1.4.4.5, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Users\86199\Desktop\tl\泰拉瑞亚开服工具\插件开发所需要的库文件\库文件4.5.18\OTAPI.dll</HintPath>
+      <HintPath>C:\Users\86199\Desktop\tl\泰拉瑞亚开服工具\插件开发所需要的库文件\库文件5.0\OTAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="OTAPI.Runtime">
+      <HintPath>C:\Users\86199\Desktop\tl\泰拉瑞亚开服工具\插件开发所需要的库文件\库文件5.0\OTAPI.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -60,11 +70,11 @@
     <Reference Include="System.Xml" />
     <Reference Include="TerrariaServer, Version=1.4.3.6, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Users\86199\Desktop\tl\泰拉瑞亚开服工具\插件开发所需要的库文件\库文件4.5.18\TerrariaServer.exe</HintPath>
+      <HintPath>C:\Users\86199\Desktop\tl\泰拉瑞亚开服工具\插件开发所需要的库文件\库文件5.0\TerrariaServer.dll</HintPath>
     </Reference>
     <Reference Include="TShockAPI, Version=4.5.18.0, Culture=neutral, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Users\86199\Desktop\tl\泰拉瑞亚开服工具\插件开发所需要的库文件\库文件4.5.18\TShockAPI.dll</HintPath>
+      <HintPath>C:\Users\86199\Desktop\tl\泰拉瑞亚开服工具\插件开发所需要的库文件\库文件5.0\TShockAPI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -74,6 +84,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Watcher.Initialize.cs" />
     <Compile Include="Watcher.Tool.cs" />
+    <Compile Include="WPlayer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="TextFile1.txt" />
