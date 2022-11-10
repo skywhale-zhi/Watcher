@@ -1,8 +1,10 @@
 ﻿using System;
+using Terraria;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
 using TShockAPI;
+using static Watcher.Watcher;
 
 namespace Watcher
 {
@@ -13,7 +15,16 @@ namespace Watcher
         {
             if (!File.Exists(configPath))
             {
-                File.WriteAllText(configPath, JsonConvert.SerializeObject(new Config(true, true, true, true, true, 21600, 1,
+                File.WriteAllText(configPath, JsonConvert.SerializeObject(new Config(true,
+                    true, 20, 2880,
+                    true, 0.5, 300, new HashSet<int> { }, new HashSet<int> { }, 3, true,
+                    true, 3000, 3, true,
+                    true, 1, 3, true,
+                    true, 3, true,
+                    true,
+                    10, new List<string> { "default", "vip" },
+                    new List<int> { },
+                    true, true, true, true, 21600, 5,
                     new HashSet<int> { 2, 3, 8, 9, 27, 40, 42, 71, 72, 93, 94, 97, 129, 168, 607, 965, 2119, 2274, 2260, 2261, 2262, 2263, 2264, 2271, 3905, 3908, 4547, 4548, 4564, 4565, 4580, 4962 },
                     new HashSet<int> { 0, 2, 3, 23, 58, 71, 72, 73, 169, 172, 176, 184, 409, 593, 664, 1734, 1735, 1867, 1868 },
                     new HashSet<int> {
@@ -23,11 +34,7 @@ namespace Watcher
                         519, 621, 637, 715, 716, 717, 718, 727, 773, 776, 777, 778, 779, 780, 781,
                         782, 783, 784, 785, 786, 787, 788, 789, 790, 791, 792, 793, 794, 795,
                         796, 797, 798, 799, 800, 801, 803, 804, 805, 806, 807, 808, 809,
-                        810, 862, 863, 868, 869, 903, 904, 905, 906, 910, 911},
-                    true, 20, 2880, true, true, true, 10, new string[] { "default", "vip" },
-                    new HashSet<int> { },
-                    new HashSet<int> { },
-                    new List<int> { }
+                        810, 862, 863, 868, 869, 903, 904, 905, 906, 910, 911,1015,1016,1017}
                     ), Formatting.Indented));
             }
 
@@ -35,60 +42,106 @@ namespace Watcher
             return c;
         }
 
-        public Config(bool b0, bool b1, bool b2, bool b3, bool b4, int num1, int num2, HashSet<int> hs1, HashSet<int> hs2, HashSet<int> hs3, bool b5, int num6, int num7, bool b8, bool b9, bool b10, int num8, string[] str1, HashSet<int> hs4, HashSet<int> hs5, List<int> l1)
+        public Config(bool 启用中文, bool 是否备份tshockSql, int 备份间隔, int 备份时长,
+            bool 启用物品作弊检测, double 物品检测频率, int 全员物品检测间隔时间秒, HashSet<int> 不需要被作弊检查的物品id, HashSet<int> 必须被检查的物品_覆盖上面一条, int 物品作弊警告方式, bool 物品作弊是否计入总违规作弊次数,
+            bool 启用射弹伤害检测, int 射弹最大伤害, int 伤害作弊警告方式, bool 伤害作弊是否计入总违规作弊次数,
+            bool 启用浮标数目检测, int 最大浮标数目, int 钓鱼作弊警告方式, bool 钓鱼作弊是否计入总违规作弊次数,
+            bool 是否启用pe版星璇机枪bug检测, int 星璇机枪作弊警告方式, bool 星璇作弊是否计入总违规作弊次数,
+            bool 是否禁用肉前恶魔心饰品栏,
+            int 允许的违规次数, List<string> 需要被检测的玩家组, List<int> 被保护的NPC,
+            bool 是否把对话内容写入日志, bool 是否把丢弃物写入日志, bool 是否把手持物写入日志, bool 是否把生成射弹写入日志, int 任何日志的备份时常分钟, int 日志和作弊日志文件的最大MB, HashSet<int> 拿持日志中的豁免物品ID, HashSet<int> 丢弃日志中的豁免物品ID, HashSet<int> 射弹日志中需要记录的危险的射弹物ID)
+
         {
-            enableChinese_启用中文 = b0;
-            whetherToWriteTheConversationContentInTheLog_是否把对话内容写入日志 = b1;
-            whetherToWriteTheDiscardsIntoTheLog_是否把丢弃物写入日志 = b2;
-            whetherToWriteTheHoldingObjectIntoTheLog_是否把手持物写入日志 = b3;
-            whetherToWriteTheProjectilesIntoTheLog_是否把生成射弹写入日志 = b4;
+            this.启用中文 = 启用中文;
 
-            logAndCheatLogBackUpTime_日志和作弊记录日志的备份时常 = num1;
-            maxMBofLogAndCheatLog_日志和作弊日志文件的最大MB = num2;
+            this.是否备份tshockSql = 是否备份tshockSql;
+            this.tshockSql备份间隔分钟 = 备份间隔;
+            this.tshockSql备份时常分钟 = 备份时长;
 
-            ImmunityHoldItemID_拿持日志中的豁免物品ID = hs1;
-            ImmunityDropItemsID_丢弃日志中的豁免物品ID = hs2;
-            DangerousProjectileID_射弹日志中需要记录的危险的射弹物ID = hs3;
+            this.启用物品作弊检测 = 启用物品作弊检测;
+            this.单人物品检测概率 = 物品检测频率;
+            this.全员物品检测间隔时间秒 = 全员物品检测间隔时间秒;
+            this.不需要被作弊检查的物品ID = 不需要被作弊检查的物品id;
+            this.必须被检查的物品_覆盖上面一条 = 必须被检查的物品_覆盖上面一条;
+            this.物品作弊警告方式 = 物品作弊警告方式;
+            this.物品作弊是否计入总违规作弊次数 = 物品作弊是否计入总违规作弊次数;
 
-            backUpTshockSql_是否备份tshockSql = b5;
-            backupInterval_备份间隔 = num6;
-            backUpTime_备份时长 = num7;
+            this.启用射弹伤害检测 = 启用射弹伤害检测;
+            this.射弹最大伤害 = 射弹最大伤害;
+            this.伤害作弊警告方式 = 伤害作弊警告方式;
+            this.伤害作弊是否计入总违规作弊次数 = 伤害作弊是否计入总违规作弊次数;
 
-            enableItemDetection_启用物品作弊检测 = b8;
-            enableProjDamage_启用射弹伤害检测 = b9;
-            enableBobberNum_启用浮标数目检测 = b10;
+            this.启用浮标数目检测 = 启用浮标数目检测;
+            this.最大浮标数目 = 最大浮标数目;
+            this.钓鱼作弊警告方式 = 钓鱼作弊警告方式;
+            this.钓鱼作弊是否计入总违规作弊次数 = 钓鱼作弊是否计入总违规作弊次数;
 
-            numberOfBan_允许的违规次数 = num8;
-            needCheckedPlayerGroups_需要被检测的玩家组 = str1;
-            ignoreCheckedItemsID_不需要被作弊检查的物品id = hs4;
-            MustBeCheckedItemsID_必须被检查的物品_覆盖上面一条 = hs5;
-            ProtectedNPC_被保护的NPC = l1;
+            this.是否启用pe版星璇机枪bug检测 = 是否启用pe版星璇机枪bug检测;
+            this.星璇机枪作弊警告方式 = 星璇机枪作弊警告方式;
+            this.星璇作弊是否计入总违规作弊次数 = 星璇作弊是否计入总违规作弊次数;
+
+            this.是否禁用肉前恶魔心饰品栏 = 是否禁用肉前恶魔心饰品栏;
+
+            this.最多违规作弊次数 = 允许的违规次数;
+            this.需要被检测的玩家组 = 需要被检测的玩家组;
+            this.被保护的NPC = 被保护的NPC;
+
+            this.是否把对话内容写入日志 = 是否把对话内容写入日志;
+            this.是否把丢弃物写入日志 = 是否把丢弃物写入日志;
+            this.是否把手持物写入日志 = 是否把手持物写入日志;
+            this.是否把生成射弹写入日志 = 是否把生成射弹写入日志;
+
+            this.任何日志的备份时常分钟 = 任何日志的备份时常分钟;
+            this.日志和作弊日志文件的最大MB = 日志和作弊日志文件的最大MB;
+
+            this.拿持日志中的豁免物品ID = 拿持日志中的豁免物品ID;
+            this.丢弃日志中的豁免物品ID = 丢弃日志中的豁免物品ID;
+            this.射弹日志中需要记录的危险的射弹物ID = 射弹日志中需要记录的危险的射弹物ID;
         }
 
-        public bool enableChinese_启用中文;
-        public bool whetherToWriteTheConversationContentInTheLog_是否把对话内容写入日志;
-        public bool whetherToWriteTheDiscardsIntoTheLog_是否把丢弃物写入日志;
-        public bool whetherToWriteTheHoldingObjectIntoTheLog_是否把手持物写入日志;
-        public bool whetherToWriteTheProjectilesIntoTheLog_是否把生成射弹写入日志;
-        public int logAndCheatLogBackUpTime_日志和作弊记录日志的备份时常;
-        public int maxMBofLogAndCheatLog_日志和作弊日志文件的最大MB;
+        public bool 启用中文;
 
-        public HashSet<int> ImmunityHoldItemID_拿持日志中的豁免物品ID;
-        public HashSet<int> ImmunityDropItemsID_丢弃日志中的豁免物品ID;
-        public HashSet<int> DangerousProjectileID_射弹日志中需要记录的危险的射弹物ID;
+        public bool 是否备份tshockSql;
+        public int tshockSql备份间隔分钟;
+        public int tshockSql备份时常分钟;
 
-        public bool backUpTshockSql_是否备份tshockSql;
-        public int backupInterval_备份间隔;
-        public int backUpTime_备份时长;
+        public bool 启用物品作弊检测;
+        public double 单人物品检测概率;
+        public int 全员物品检测间隔时间秒;
+        public HashSet<int> 不需要被作弊检查的物品ID;
+        public HashSet<int> 必须被检查的物品_覆盖上面一条;
+        public int 物品作弊警告方式;
+        public bool 物品作弊是否计入总违规作弊次数;
 
-        public bool enableItemDetection_启用物品作弊检测;
-        public bool enableProjDamage_启用射弹伤害检测;
-        public bool enableBobberNum_启用浮标数目检测;
-        public int numberOfBan_允许的违规次数;
-        public string[] needCheckedPlayerGroups_需要被检测的玩家组;
-        public HashSet<int> ignoreCheckedItemsID_不需要被作弊检查的物品id;
-        public HashSet<int> MustBeCheckedItemsID_必须被检查的物品_覆盖上面一条;
+        public bool 启用射弹伤害检测;
+        public int 射弹最大伤害;
+        public int 伤害作弊警告方式;
+        public bool 伤害作弊是否计入总违规作弊次数;
 
-        public List<int> ProtectedNPC_被保护的NPC;
+        public bool 启用浮标数目检测;
+        public int 最大浮标数目;
+        public int 钓鱼作弊警告方式;
+        public bool 钓鱼作弊是否计入总违规作弊次数;
+
+        public bool 是否启用pe版星璇机枪bug检测;
+        public int 星璇机枪作弊警告方式;
+        public bool 星璇作弊是否计入总违规作弊次数;
+
+        public bool 是否禁用肉前恶魔心饰品栏;
+
+        public int 最多违规作弊次数;
+        public List<string> 需要被检测的玩家组;
+        public List<int> 被保护的NPC;
+
+        public bool 是否把对话内容写入日志;
+        public bool 是否把丢弃物写入日志;
+        public bool 是否把手持物写入日志;
+        public bool 是否把生成射弹写入日志;
+        public int 任何日志的备份时常分钟;
+        public int 日志和作弊日志文件的最大MB;
+
+        public HashSet<int> 拿持日志中的豁免物品ID;
+        public HashSet<int> 丢弃日志中的豁免物品ID;
+        public HashSet<int> 射弹日志中需要记录的危险的射弹物ID;
     }
 }
