@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Watcher;
 
-namespace Watcher
+//还没弄
+internal class WatcherLog
 {
-    //还没弄
-    internal class WatcherLog
-    {
-    }
 }
