@@ -1,13 +1,4 @@
-﻿using OTAPI;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using Terraria;
-using Terraria.GameContent;
-using Terraria.ID;
-using Terraria.Localization;
+﻿using Terraria;
 using TerrariaApi.Server;
 using TShockAPI;
 using TShockAPI.Hooks;
@@ -19,31 +10,42 @@ namespace Watcher
     {
         public override string Author => "z枳";
 
-        public override string Description => "详细监视日志和一些防作弊措施";
+        public override string Description => "更详细的日志信息和一些防作弊措施";
 
         public override string Name => "Watcher";
 
-        public override Version Version => new Version(2, 0, 0, 0);
+        public override Version Version => new Version(1, 3, 0, 0);
+
 
         #region 数据与字段
-        //日志文件夹
-        public string logDirPath = Path.Combine(TShock.SavePath + "/Watcher/logs");
-        //日志文件路径
-        public string logFilePath;
-        //作弊检测日志文件夹
-        public string cheatLogDirPath = Path.Combine(TShock.SavePath + "/Watcher/cheatLogs");
-        //作弊检测日志
-        public string cheatLogFilePath;
-        //config文件路径
-        public string configPath = Path.Combine(TShock.SavePath + "/Watcher", "WatcherConfig.json");
-        //item的id上下限
-        public readonly int ItemIDMax = ItemID.Count, ItemIDMin = 1;
-        //npc的id上下限
-        public readonly int NpcIDMax = NPCID.Count, NpcIDMin = -65;
-        //作弊玩家信息记录
+        /// <summary>
+        /// 日志文件夹
+        /// </summary>
+        public readonly string logDirPath = Path.Combine(TShock.SavePath + "/Watcher/WatcherLogs");
+        /// <summary>
+        /// 日志文件路径
+        /// </summary>
+        public string logFilePath = "";
+        /// <summary>
+        /// 作弊检测日志文件夹
+        /// </summary>
+        public readonly string cheatLogDirPath = Path.Combine(TShock.SavePath + "/Watcher/CheatLogs");
+        /// <summary>
+        /// 作弊检测日志
+        /// </summary>
+        public string cheatLogFilePath = "";
+        /// <summary>
+        /// 玩家的信息记录，考虑active，保留作弊和在线的玩家，不作弊且不在线的会被移除
+        /// </summary>
         public static List<WPlayer> wPlayers = new List<WPlayer>();
-        //config变量
-        public Config config;
+        /// <summary>
+        /// config变量
+        /// </summary>
+        public static Config config = new Config();
+        /// <summary>
+        /// 计时器 , 60 Timer == 1 秒
+        /// </summary>
+        public static long Timer = 0;
         /// <summary>
         /// 作弊类型的枚举
         /// </summary>
@@ -52,113 +54,73 @@ namespace Watcher
             FishCheat,      //多线钓鱼作弊
             DamageCheat,    //高额伤害作弊
             ItemCheat,      //超进度物品作弊
-            VortexCheat     //星璇机枪作弊
+            DangerousProj   //危险的射弹
         }
+        /// <summary>
+        /// 惩罚类型
+        /// </summary>
+        public enum TypesOfPunish
+        {
+            oral,       //口头惩罚
+            publicWarning, //公开警告
+            disable,    //封住行动
+            kill,       //杀掉
+            kick,       //踢掉
+        }
+        //权限
+        public readonly string p_admin = "watcher.admin";
+        public readonly string p_check = "watcher.check";
+        public readonly string p_use = "watcher.use";
         #endregion
 
-        public Watcher(Main game) : base(game)
-        {
-        }
+
+        public Watcher(Main game) : base(game) { }
 
         public override void Initialize()
         {
-            SetWatcherFile("logDirPath", logDirPath);
-            SetWatcherFile("cheatLogDirPath", cheatLogDirPath);
-            config = Config.LoadConfigFile();
-            wPlayers = WPM.LoadConfigFile();
-            CheatData.SetCheatData();
-
-            if (config.启用中文)
-                LanguageManager.Instance.SetLanguage("zh-Hans");
-            else
-                LanguageManager.Instance.SetLanguage("default");
+            Timer = 0L;
 
             //将聊天写入日志
             ServerApi.Hooks.ServerChat.Register(this, OnChat);
             //丢弃物品写入日志
             GetDataHandlers.ItemDrop += SetDropItemLog;
-            //持有物品写入日志
-            GetDataHandlers.PlayerSlot += SetItemLog;
-            //生成射弹写入日志
-            GetDataHandlers.NewProjectile += SetProjLog;
+            //持有物品写入日志，持有物品时，检查背包
+            GetDataHandlers.PlayerSlot += PlayerSlots;
+            //生成射弹写入日志并检查射弹作弊
+            GetDataHandlers.NewProjectile += OnNewProjectile;
+            //初始化完毕时
+            ServerApi.Hooks.GamePostInitialize.Register(this, OnPostGameI);
+            //击中npc时，记住伤害
+            ServerApi.Hooks.NpcStrike.Register(this, OnNpcStrike);
+
+            /*
+            GetDataHandlers.ChestItemChange.Register(OnChestItemChange);
+            GetDataHandlers.ChestOpen.Register(OnChestOpen);
+            ServerApi.Hooks.ItemForceIntoChest.Register(this, OnItemForceChest);
+            */
+
             //每秒服务器更新执行一次
             ServerApi.Hooks.GameUpdate.Register(this, GameRun);
-            //射弹作弊检查
-            GetDataHandlers.NewProjectile += ProjCheatingCheck;
-            //持有物品时，检查背包
-            GetDataHandlers.PlayerSlot += ItemCheatingCheck;
             //检查登录的人是否是作弊人员
-            ServerApi.Hooks.ServerJoin.Register(this, OnServerjoin);
+            ServerApi.Hooks.NetGreetPlayer.Register(this, OnGreetPlayer);
             ServerApi.Hooks.ServerLeave.Register(this, OnServerLeave);
-            //击中npc时触发，向攻击保护动物的玩家发送消息,对保护动物进行回血保护
-            ServerApi.Hooks.NpcStrike.Register(this, OnStrike);
-           
-            //这里当boss生成是发送警告此为保护动物的消息
             GeneralHooks.ReloadEvent += OnReload;
-
 
             #region 指令
 
-            Commands.ChatCommands.Add(new Command("", Help, "watcher", "wat")
+            Commands.ChatCommands.Add(new Command(p_use, Help, "watcher", "wat")
             {
-                HelpText = "输入 /watcher(或 wat) help 来获取该插件的帮助"
+                HelpText = "输入 /wat help 来获取该插件的帮助"
             });
-
-
-            Commands.ChatCommands.Add(new Command("watcher.clearcheatdata", ClearCheatData, "clearcd", "clcd")
-            {
-                HelpText = "输入 /clearcd(或clcd) 【玩家名称】 来清理该玩家的作弊数据"
-            });
-            Commands.ChatCommands.Add(new Command("watcher.clearcheatdata", ClearCheatDataAll, "clearcda", "clall")
-            {
-                HelpText = "输入 /clearcdall(或clall) 来清理所有玩家的作弊数据"
-            });
-
-
-            Commands.ChatCommands.Add(new Command("watcher.locknpc", LockNpc, "locknpc")
-            {
-                HelpText = "输入 /locknpc 【NPC id/Boss 汉字名称/Boss 拼音缩写】 来封禁玩家对该boss或npc攻击"
-            });
-            Commands.ChatCommands.Add(new Command("watcher.unlocknpc", UnlockNpc, "unlocknpc")
-            {
-                HelpText = "输入 /unlocknpc 【NPC id/Boss 汉字名称/Boss 拼音缩写】 来解除玩家对该boss或npc的攻击"
-            });
-            Commands.ChatCommands.Add(new Command("watcher.listlocknpc", ListLockNpc, "listlocknpc")
-            {
-                HelpText = "输入 /listlocknpc   来查看所有禁止被攻击的生物"
-            });
-
-
-            Commands.ChatCommands.Add(new Command("watcher.adduncheckeditem", AddUnCheckedItem, "adduci")
-            {
-                HelpText = "输入 /adduci 【item:id】 来添加不被系统检查的物品"
-            });
-            Commands.ChatCommands.Add(new Command("watcher.deluncheckeditem", DelUnCheckedItem, "deluci")
-            {
-                HelpText = "输入 /deluci 【item:id】 来删除不被系统检查的物品"
-            });
-            Commands.ChatCommands.Add(new Command("watcher.listuncheckeditem", ListUnCheckedItem, "listuci")
-            {
-                HelpText = "输入 /listuci 来查看所有不被系统检查的物品"
-            });
-
-
-            Commands.ChatCommands.Add(new Command("watcher.addmustcheckeditem", AddMustCheckedItem, "addmci")
-            {
-                HelpText = "输入 /addmci 【item:id】 来添加必定被系统检查的物品（强制检查豁免物）"
-            });
-            Commands.ChatCommands.Add(new Command("watcher.delmustcheckeditem", DelMustCheckedItem, "delmci")
-            {
-                HelpText = "输入 /delmci 【item:id】 来删除必定被系统检查的物品（强制检查豁免物）"
-            });
-            Commands.ChatCommands.Add(new Command("watcher.listmustcheckeditem", ListMustCheckedItem, "listmci")
-            {
-                HelpText = "输入 /listmci 来查看所有被强制检查检查的物品"
-            });
-
             #endregion
+            /*
+            Commands.ChatCommands.Add(new Command("", Test, "t")
+            {
+                HelpText = "输入 /t"
+            });*/
 
         }
+
 
         protected override void Dispose(bool disposing)
         {
@@ -166,22 +128,58 @@ namespace Watcher
             {
                 ServerApi.Hooks.ServerChat.Deregister(this, OnChat);
                 GetDataHandlers.ItemDrop -= SetDropItemLog;
-                GetDataHandlers.PlayerSlot -= SetItemLog;
-                GetDataHandlers.NewProjectile -= SetProjLog;
-
+                GetDataHandlers.NewProjectile -= OnNewProjectile;
+                GetDataHandlers.PlayerSlot -= PlayerSlots;
+                ServerApi.Hooks.GamePostInitialize.Deregister(this, OnPostGameI);
+                ServerApi.Hooks.NpcStrike.Deregister(this, OnNpcStrike);
                 ServerApi.Hooks.GameUpdate.Deregister(this, GameRun);
-                GetDataHandlers.NewProjectile -= ProjCheatingCheck;
-                GetDataHandlers.PlayerSlot -= ItemCheatingCheck;
-
-                ServerApi.Hooks.ServerJoin.Deregister(this, OnServerjoin);
+                ServerApi.Hooks.NetGreetPlayer.Deregister(this, OnGreetPlayer);
                 ServerApi.Hooks.ServerLeave.Deregister(this, OnServerLeave);
-
-                ServerApi.Hooks.NpcStrike.Deregister(this, OnStrike);
-                ServerApi.Hooks.NpcSpawn.Deregister(this, OnNpcSpawn);
-
                 GeneralHooks.ReloadEvent -= OnReload;
             }
             base.Dispose(disposing);
+        }
+
+
+        private void OnReload(ReloadEventArgs e)
+        {
+            Config config = Config.LoadConfigFile();
+            //把一些不合法的配置文件输入纠正下
+            if (config.全员物品检测时间间隔_单位秒 < 1)
+            {
+                e.Player.SendWarningMessage("全员物品检测时间间隔不能小于1，已改为默认300");
+                config.全员物品检测时间间隔_单位秒 = 300;
+            }
+            if (config.启用伤害检测)
+            {
+                TShock.Config.Settings.MaxProjDamage = int.MaxValue;
+                TShock.Config.Settings.MaxDamage = int.MaxValue;
+                SaveTConfig();
+            }
+            if (config.伤害作弊警告方式_0口头私聊_1广播警告_2广播并网住_3广播并杀死_4广播并踢出 < (int)TypesOfPunish.oral || config.伤害作弊警告方式_0口头私聊_1广播警告_2广播并网住_3广播并杀死_4广播并踢出 > (int)TypesOfPunish.kick)
+            {
+                e.Player.SendWarningMessage("伤害作弊警告方式的范围为 0 ~ 4 整数，已纠正为默认3");
+                config.伤害作弊警告方式_0口头私聊_1广播警告_2广播并网住_3广播并杀死_4广播并踢出 = 3;
+            }
+            if (config.物品作弊警告方式_0口头私聊_1广播警告_2广播并网住_3广播并杀死_4广播并踢出 < (int)TypesOfPunish.oral || config.物品作弊警告方式_0口头私聊_1广播警告_2广播并网住_3广播并杀死_4广播并踢出 > (int)TypesOfPunish.kick)
+            {
+                e.Player.SendWarningMessage("物品作弊警告方式的范围为 0 ~ 4 整数，已纠正为默认3");
+                config.物品作弊警告方式_0口头私聊_1广播警告_2广播并网住_3广播并杀死_4广播并踢出 = 3;
+            }
+            if (config.钓鱼作弊警告方式_0口头私聊_1广播警告_2广播并网住_3广播并杀死_4广播并踢出 < (int)TypesOfPunish.oral || config.钓鱼作弊警告方式_0口头私聊_1广播警告_2广播并网住_3广播并杀死_4广播并踢出 > (int)TypesOfPunish.kick)
+            {
+                e.Player.SendWarningMessage("钓鱼作弊警告方式的范围为 0 ~ 4 整数，已纠正为默认3");
+                config.钓鱼作弊警告方式_0口头私聊_1广播警告_2广播并网住_3广播并杀死_4广播并踢出 = 3;
+            }
+            if (config.全员物品检测时间间隔_单位秒 < 1)
+            {
+                e.Player.SendWarningMessage("全员物品检查时间间隔不能小于1，已纠正为默认320");
+                config.全员物品检测时间间隔_单位秒 = 320;
+            }
+            wPlayers = WPlayer.LoadConfigFile();
+            WPlayer.SaveConfigFile();
+            Watcher.config = config;
+            Watcher.config.SaveConfigFile();
         }
     }
 }
